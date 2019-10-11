@@ -42,9 +42,9 @@
             = f.label :authors_or_created_by_name_cont, "Authors"
             = f.text_field :authors_or_created_by_name_cont, class: "span12"
           .field.span2
-            = f.label :content_category_id_in, "Category"
-            = f.collection_select :content_category_id_in, @content_categories,
-              :id, :label, { include_blank: true },
+            = f.label :content_category_in, "Category"
+            = f.select :content_category_in, Content::CONTENT_CATEGORIES.collect{ |cat| [cat.titlecase, cat] },
+              { include_blank: true },
               { multiple: true, class: "chosen-select span12" }
           .field.span2
             = f.label :pubdate_not_null, "Published?"
@@ -79,7 +79,7 @@
     - @contents.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
         %td= c.id
-        %td= c.content_category.try(:label)
+        %td= c.content_category.titlecase
         %td
           = link_to c.title, edit_content_path(c)
           - if c.raw_content.present?

@@ -86,11 +86,6 @@ class SelectPromotionBanners
     end
   end
 
-  def campaign_content_category_id
-    ContentCategory.find_or_create_by(name: 'campaign').id
-  end
-
-
   def get_targeted_promotions
     if @opts[:location_id].present?
       promotions_scope = PromotionBanner.has_inventory

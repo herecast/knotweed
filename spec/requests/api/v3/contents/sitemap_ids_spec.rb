@@ -19,11 +19,7 @@ RSpec.describe 'Sitemap Ids Endpoints', type: :request do
       FactoryGirl.create :content, :news, :published, organization: org
     end
     let!(:comment) do
-      FactoryGirl.create :comment
-    end
-
-    before do
-      comment.content.update organization: org
+      FactoryGirl.create :content, :comment, organization: org
     end
 
     let(:query_params) { {} }
@@ -36,7 +32,7 @@ RSpec.describe 'Sitemap Ids Endpoints', type: :request do
     it 'returns the ids of the contents as expected (not events or comments by default)' do
       expect(subject[:content_ids]).to include *[talk, market_post, news].map(&:id)
       expect(subject[:content_ids]).to_not include event.id
-      expect(subject[:content_ids]).to_not include comment.content.id
+      expect(subject[:content_ids]).to_not include comment.id
     end
 
     it 'allows specifying type separated by comma' do

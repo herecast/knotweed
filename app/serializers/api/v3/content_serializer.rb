@@ -66,7 +66,7 @@ module Api
       end
 
       def image_url
-        if object.root_content_category.try(:name) == 'campaign' && object.promotions.present?
+        if object.content_category == 'campaign' && object.promotions.present?
           object.promotions.first.try(:promotable).try(:banner_image).try(:url)
         elsif object.images.present?
           object.images[0].image.url
@@ -179,7 +179,7 @@ module Api
       end
 
       def click_count
-        if object.root_content_category.try(:name) == 'campaign'
+        if object.content_category == 'campaign'
           object.promotions.first.try(:promotable).try(:click_count)
         end
       end
@@ -195,8 +195,8 @@ module Api
       end
 
       def parent_content_type
-        if object.parent.present? && object.parent.root_content_category.present?
-          object.parent.root_content_category.name
+        if object.parent.present? && object.parent.content_category.present?
+          object.parent.content_type
         end
       end
 
@@ -207,7 +207,7 @@ module Api
       end
 
       def redirect_url
-        if object.root_content_category.try(:name) == 'campaign'
+        if object.content_category == 'campaign'
           object.promotions.first.try(:promotable).try(:redirect_url)
         end
       end
@@ -287,7 +287,7 @@ module Api
       end
 
       def contact_email
-        if %i[market event].include? object.content_type
+        if %w[market event].include? object.content_type
           if object.channel.present?
             object.channel.try(:contact_email)
           else

@@ -9,11 +9,10 @@ describe Api::V3::OrganizationsController, type: :controller do
       @organization = FactoryGirl.create :organization
       @non_news_org = FactoryGirl.create :organization
       @difft_app_org = FactoryGirl.create :organization
-      @news_cat = FactoryGirl.create :content_category, name: 'news'
       FactoryGirl.create(:content, organization: @organization,
-                                   content_category: @news_cat)
+                                   content_category: 'news')
       FactoryGirl.create(:content, organization: @difft_app_org,
-                                   content_category: @news_cat)
+                                   content_category: 'news')
       Organization.reindex
     end
 

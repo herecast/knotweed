@@ -48,7 +48,7 @@ module Ugc
           biz_feed_public
           authoremail
           authors
-          content_category_id
+          content_category
           pubdate
           timestamp
           organization_id
@@ -71,7 +71,7 @@ module Ugc
           biz_feed_public: @params[:content][:biz_feed_public],
           authoremail: @current_user.try(:email),
           authors: @current_user.try(:name),
-          content_category_id: market_category.id,
+          content_category: 'market',
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
           organization_id: @params[:content][:organization_id] || default_org.id,
@@ -81,10 +81,6 @@ module Ugc
           url: @params[:content][:url]
         }
       }
-    end
-
-    def market_category
-      ContentCategory.find_or_create_by(name: 'market')
     end
 
     def default_org

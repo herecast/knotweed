@@ -15,7 +15,7 @@ def content_response_schema(record)
       comment_count: 0,
       commenter_count: 0,
       # contact_email is only returned for event and market content
-      contact_email: (%i[market event].include?(record.content_type) ? (record.channel.try(:contact_email) || record.authoremail) : nil),
+      contact_email: (%i[market event].include?(record.content_category) ? (record.channel.try(:contact_email) || record.authoremail) : nil),
       contact_phone: record.channel.try(:contact_phone),
       content: ImageUrlService.optimize_image_urls(
         html_text: record.sanitized_content,
@@ -24,7 +24,7 @@ def content_response_schema(record)
         default_crop:   false
       ),
       content_origin: Content::UGC_ORIGIN.downcase,
-      content_type: record.content_type.to_s,
+      content_type: record.content_type,
       cost: record.channel.try(:cost),
       cost_type: record.channel.try(:cost_type),
       created_at: record.created_at.iso8601,

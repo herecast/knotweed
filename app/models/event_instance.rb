@@ -67,7 +67,7 @@ class EventInstance < ActiveRecord::Base
         :venue
       ]
     ).joins(event: :content)\
-      .where('contents.root_content_category_id > 0')
+      .where('contents.content_category IS NOT NULL')
   }
 
   def search_data

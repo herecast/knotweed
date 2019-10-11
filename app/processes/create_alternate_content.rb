@@ -33,19 +33,13 @@ class CreateAlternateContent
     end
   end
 
-  def content_category
-    ContentCategory.find_or_create_by(name: 'alternate_content')
-  end
-
   def alternate_content_attributes
     {
       title: @original_content.alternate_title.presence || ALTERNATE_TITLE,
       raw_content: @original_content.alternate_text.presence || ALTERNATE_TEXT,
       authors: @original_content.alternate_authors.presence || ALTERNATE_AUTHORS,
       organization_id: @original_content.alternate_organization_id.presence || ALTERNATE_ORGANIZATION_ID,
-      content_category_id: content_category.id,
-      root_content_category_id: content_category.id,
-      content_type: @original_content.content_type,
+      content_category: @original_content.content_category,
       id: @original_content.id,
       pubdate: @original_content.pubdate
     }

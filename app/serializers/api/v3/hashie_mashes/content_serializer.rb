@@ -131,7 +131,7 @@ module Api
         private
 
         def is_event?
-          object.content_type.to_s == 'event'
+          object.content_type == 'event'
         end
       end
     end

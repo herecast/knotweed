@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: contents
@@ -19,7 +18,6 @@
 #  organization_id           :bigint(8)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
-#  content_category_id       :bigint(8)
 #  has_event_calendar        :boolean          default(FALSE)
 #  channelized_content_id    :bigint(8)
 #  channel_type              :string(255)
@@ -65,17 +63,16 @@
 #  location_id               :integer
 #  mc_campaign_id            :string
 #  ad_service_id             :string
+#  content_category          :string
 #
 # Indexes
 #
 #  idx_16527_authors                                     (authors)
-#  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
 #  idx_16527_index_contents_on_created_by                (created_by_id)
-#  idx_16527_index_contents_on_created_by_id             (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
@@ -83,6 +80,7 @@
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
 #  index_contents_on_ad_service_id                       (ad_service_id)
+#  index_contents_on_content_category                    (content_category)
 #  index_contents_on_location_id                         (location_id)
 #
 # Foreign Keys
@@ -99,6 +97,8 @@ class Content < ActiveRecord::Base
   include Incrementable
   include Searchable
 
+  CONTENT_CATEGORIES = %w(talk_of_the_town news campaign market event)
+
   before_create :set_latest_activity
   def set_latest_activity
     self.latest_activity = pubdate.present? ? pubdate : Time.current
@@ -106,7 +106,7 @@ class Content < ActiveRecord::Base
 
   before_save :conditionally_update_latest_activity
   def conditionally_update_latest_activity
-    if content_type == :news && will_save_change_to_pubdate?
+    if content_category == 'news' && will_save_change_to_pubdate?
       self.latest_activity = pubdate
     end
   end
@@ -128,18 +128,14 @@ class Content < ActiveRecord::Base
              }
 
   scope :search_import, lambda {
-    includes(:root_content_category,
-             :content_category,
-             :promotions,
+    includes(:promotions,
              :images,
              :created_by,
              :location,
              children: [:created_by],
-             parent: [:root_content_category],
-             content_category: [:parent],
              organization: %i[locations organization_locations])
       .where('organization_id NOT IN (4,5,328)')
-      .where('root_content_category_id > 0')
+      .where('content_category IS NOT NULL')
       .where('raw_content IS NOT NULL')
       .where("raw_content != ''")
   }
@@ -208,9 +204,6 @@ class Content < ActiveRecord::Base
   has_many :promotions
   has_many :user_bookmarks
 
-  belongs_to :content_category
-  belongs_to :root_content_category, class_name: 'ContentCategory'
-
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: 'Content'
   has_one :sales_agent, class_name: 'User', primary_key: 'ad_sales_agent', foreign_key: 'id'
@@ -240,19 +233,13 @@ class Content < ActiveRecord::Base
   belongs_to :market_post, foreign_key: 'channel_id'
   accepts_nested_attributes_for :market_post, allow_destroy: true
 
-  scope :events, lambda {
-                   joins(:content_category).where('content_categories.name = ? or content_categories.name = ?',
-                                                  'event', 'sale_event')
-                 }
+  scope :events, lambda { where(content_category: 'event') }
   scope :market_posts, -> { where(channel_type: 'MarketPost') }
 
   scope :not_deleted, -> { where(deleted_at: nil) }
   scope :not_removed, -> { where(removed: false) }
   scope :not_comment, -> { where(parent_id: nil) }
-  scope :only_categories, lambda { |names|
-    joins('JOIN content_categories AS category ON root_content_category_id = category.id')\
-      .where('category.name IN (?)', names)
-  }
+  scope :only_categories, lambda { |names| where('content_category IN (?)', names) }
 
   scope :ad_campaign_active, lambda { |date = Date.current|
                                where('ad_campaign_start <= ?', date)
@@ -260,7 +247,7 @@ class Content < ActiveRecord::Base
                              }
 
   scope(:ad_campaigns_for_reports, lambda do |window_start = 8.days.ago, window_end = Date.current|
-    where(content_category_id: ContentCategory.find_or_create_by(name: 'campaign').id)
+    where(content_category: 'campaign')
       .where("(ad_campaign_start >= :window_start AND ad_campaign_start < :window_end) OR
           (ad_campaign_end >= :window_start AND ad_campaign_end < :window_end) OR
           (ad_campaign_start <= :window_start AND ad_campaign_end >= :window_end)",
@@ -313,47 +300,14 @@ class Content < ActiveRecord::Base
     raw_content
   end
 
-  def category
-    return content_category.name unless content_category.nil?
-  end
-
-  def category=(new_cat)
-    cat = ContentCategory.find_or_create_by(name: new_cat) unless new_cat.nil?
-    self.content_category = cat
-  end
-
   def content_type
-    prefix = root_content_category.try(:name)
-    # convert talk_of_the_town to talk
-    prefix = 'talk' if prefix == 'talk_of_the_town'
-    if parent_id.present?
-      prefix = 'comment' if channel_type == 'Comment' && parent_id != id
+    if parent_id.present? and channel_type == 'Comment'
+      'comment'
+    elsif content_category == 'talk_of_the_town'
+      'talk'
+    else
+      content_category
     end
-    prefix.to_s.to_sym
-  end
-
-  def content_type=(t)
-    cat_name = t.to_s
-    cat_name = 'talk' if t.to_s == 'talk_of_the_town'
-    self.category = cat_name if cat_name != content_type.to_s
-  end
-
-  def set_root_content_category_id
-    self.root_content_category = if content_category.present?
-                                   content_category.parent || content_category
-                                 end
-  end
-
-  def content_category_id=(id)
-    super(id)
-    set_root_content_category_id
-    id
-  end
-
-  def content_category=(cat)
-    super(cat)
-    set_root_content_category_id
-    cat
   end
 
   def set_root_parent_id
@@ -413,7 +367,7 @@ class Content < ActiveRecord::Base
   end
 
   def is_campaign?
-    content_category_id == ContentCategory.find_or_create_by(name: 'campaign').id
+    content_category == 'campaign'
   end
 
   # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by
@@ -444,7 +398,7 @@ class Content < ActiveRecord::Base
   def increment_view_count!
     # check if content is published before incrementing
     if pubdate.present? && (pubdate <= Time.now)
-      unless User.current.try(:skip_analytics) && root_content_category.name == 'news'
+      unless User.current.try(:skip_analytics) && content_category == 'news'
         increment_integer_attr!(:view_count)
       end
     end
@@ -455,7 +409,7 @@ class Content < ActiveRecord::Base
   #
   # @return [String] the author's name
   def author_name
-    if is_news_ugc? || is_news_child_category?
+    if is_news?
       if authors_is_created_by?
         created_by.try(:name)
       else
@@ -470,11 +424,11 @@ class Content < ActiveRecord::Base
   #
   # @return [Boolean] true if is news ugc
   def is_news_ugc?
-    (origin == UGC_ORIGIN) && (content_category.try(:name) == 'news')
+    (origin == UGC_ORIGIN) && content_category == 'news'
   end
 
-  def is_news_child_category?
-    root_content_category.try(:name) == 'news'
+  def is_news?
+    content_category == 'news'
   end
 
   def current_daily_report(current_date = Date.current)
@@ -494,7 +448,7 @@ class Content < ActiveRecord::Base
   end
 
   def built_view_count
-    if root_content_category.try(:name) == 'campaign'
+    if content_category == 'campaign'
       promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
     elsif parent.present?
       parent_view_count
@@ -540,7 +494,7 @@ class Content < ActiveRecord::Base
   end
 
   def hide_campaign_from_public_view
-    if root_content_category_id == ContentCategory.find_or_create_by(name: 'campaign').id
+    if content_category == 'campaign'
       update_attribute(:biz_feed_public, false)
     end
   end

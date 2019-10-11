@@ -10,7 +10,7 @@ class CampaignsController < ApplicationController
       params[:q] ||= {}
       params[:q].each { |key, val| params[:q][key] = '' if val == '0' }
       params[:q][:promotion_promotable_type_eq] = 'PromotionBanner'
-      params[:q][:content_category_id_eq] = ContentCategory.find_or_create_by(name: 'campaign').id
+      params[:q][:content_category_eq] = 'campaign'
       session[:campaign_search] = params[:q]
     end
 
@@ -33,8 +33,10 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    @content = Content.new(campaign_params.merge({ pubdate: Date.current }))
-    @content.content_category_id = campaign_content_category_id
+    @content = Content.new(campaign_params.merge({
+      pubdate: Date.current,
+      content_category: 'campaign'
+    }))
     if @content.save
       # create campaign on Subtext Ad Service
       BackgroundJob.perform_later('SubtextAdService', 'create', @content)
@@ -88,10 +90,6 @@ class CampaignsController < ApplicationController
       :ad_sales_agent,
       :ad_promoter
     )
-  end
-
-  def campaign_content_category_id
-    ContentCategory.find_or_create_by(name: 'campaign').id
   end
 
   def correct_path

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: contents
@@ -19,7 +18,6 @@
 #  organization_id           :bigint(8)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
-#  content_category_id       :bigint(8)
 #  has_event_calendar        :boolean          default(FALSE)
 #  channelized_content_id    :bigint(8)
 #  channel_type              :string(255)
@@ -65,17 +63,16 @@
 #  location_id               :integer
 #  mc_campaign_id            :string
 #  ad_service_id             :string
+#  content_category          :string
 #
 # Indexes
 #
 #  idx_16527_authors                                     (authors)
-#  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
 #  idx_16527_index_contents_on_created_by                (created_by_id)
-#  idx_16527_index_contents_on_created_by_id             (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
@@ -83,6 +80,7 @@
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
 #  index_contents_on_ad_service_id                       (ad_service_id)
+#  index_contents_on_content_category                    (content_category)
 #  index_contents_on_location_id                         (location_id)
 #
 # Foreign Keys
@@ -100,8 +98,8 @@ FactoryGirl.define do
     raw_content 'Content goes here'
     organization
     pubdate { Time.current }
-    content_category
     authoremail 'fake@email.com'
+    content_category 'talk_of_the_town'
     created_by { FactoryGirl.build(:user) }
     location
 
@@ -116,30 +114,17 @@ FactoryGirl.define do
       channel do
         FactoryGirl.build :comment, content: nil
       end
-      content_category do
-        ContentCategory.find_or_create_by(
-          name: 'talk_of_the_town'
-        )
-      end
+      content_category 'talk_of_the_town'
     end
 
     trait :news do
       located
-      content_category do
-        ContentCategory.find_or_create_by(
-          name: 'news'
-        )
-      end
+      content_category 'news'
     end
 
     trait :event do
       located
-      content_category do
-        ContentCategory.find_or_create_by(
-          name: 'event'
-        )
-      end
-
+      content_category 'event'
       channel do
         FactoryGirl.build :event, content: nil
       end
@@ -147,12 +132,7 @@ FactoryGirl.define do
 
     trait :market_post do
       located
-      content_category do
-        ContentCategory.find_or_create_by(
-          name: 'market'
-        )
-      end
-
+      content_category 'market'
       channel do
         FactoryGirl.build :market_post, content: nil
       end
@@ -160,6 +140,7 @@ FactoryGirl.define do
 
     trait :comment do
       channel_type 'Comment'
+      content_category 'talk_of_the_town'
       parent_id 0
       channel do
         FactoryGirl.build :comment, content: nil
@@ -175,11 +156,7 @@ FactoryGirl.define do
       ad_campaign_start Date.yesterday
       ad_campaign_end 1.month.from_now
       sequence(:ad_service_id) { |n| "ad-service-id-#{n}" } 
-      content_category do
-        ContentCategory.find_or_create_by(
-          name: 'campaign'
-        )
-      end
+      content_category 'campaign'
     end
   end
 end

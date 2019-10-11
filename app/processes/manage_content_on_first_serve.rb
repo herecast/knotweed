@@ -25,7 +25,7 @@ class ManageContentOnFirstServe
           conditionally_schedule_notification(content)
           if production_messaging_enabled?
             scrape_with_facebook(content)
-            if content.content_type == :news
+            if content.content_type == 'news'
               IntercomService.send_published_content_event(content)
               SlackService.send_published_content_notification(content)
             end

@@ -2,38 +2,37 @@ require 'spec_helper'
 
 RSpec.describe SendExternalAdvertiserReportsJob do
   before do
-    campaign_category = FactoryGirl.create :content_category, name: 'campaign'
     @organization = FactoryGirl.create :organization
     @active_campaign_1 = FactoryGirl.create :content,
-      content_category_id: campaign_category.id,
+      :campaign,
       ad_campaign_start: 9.days.ago,
       ad_campaign_end: 2.days.ago,
       organization_id: @organization.id,
       ad_promotion_type: 'ROS',
       promotions: [FactoryGirl.create(:promotion)]
      @active_campaign_2 = FactoryGirl.create :content,
-      content_category_id: campaign_category.id,
+      :campaign,
       ad_campaign_start: 9.days.ago,
       ad_campaign_end: 2.days.from_now,
       organization_id: @organization.id,
       ad_promotion_type: 'ROS',
       promotions: [FactoryGirl.create(:promotion)]
      @active_campaign_3 = FactoryGirl.create :content,
-      content_category_id: campaign_category.id,
+      :campaign,
       ad_campaign_start: 4.days.ago,
       ad_campaign_end: 2.days.from_now,
       organization_id: @organization.id,
       ad_promotion_type: 'ROS',
       promotions: [FactoryGirl.create(:promotion)]
-    @innactive_campaign_past = FactoryGirl.create :content,
-      content_category_id: campaign_category.id,
+    @inactive_campaign_past = FactoryGirl.create :content,
+      :campaign,
       ad_campaign_start: 20.days.ago,
       ad_campaign_end: 10.days.ago,
       organization_id: @organization.id,
       ad_promotion_type: 'ROS',
       promotions: [FactoryGirl.create(:promotion)]
-    @innactive_campaign_future = FactoryGirl.create :content,
-      content_category_id: campaign_category.id,
+    @inactive_campaign_future = FactoryGirl.create :content,
+      :campaign,
       ad_campaign_start: 2.days.from_now,
       ad_campaign_end: 10.days.from_now,
       organization_id: @organization.id,

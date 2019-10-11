@@ -19,7 +19,7 @@
       .tab-pane.form-horizontal#features{ class: "active" }
         .row-fluid
           .span6
-            = f.hidden_field :content_category, value: ContentCategory.find_by_name('campaign')
+            = f.hidden_field :content_category, value: 'campaign'
             = f.association :organization, input_html: { class: "chosen-select span12" }, label: "Advertiser"
             = f.input :title, input_html: { class: "input-block-level" }, label: 'Campaign Title'
             = f.input :ad_promotion_type, collection: PromotionBanner::PROMOTION_TYPES, input_html: { class: "input-block-level" }, label: 'Ad type'

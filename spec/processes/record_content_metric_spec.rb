@@ -4,8 +4,7 @@ require 'spec_helper'
 
 RSpec.describe RecordContentMetric, elasticsearch: true do
   before do
-    @content_category = FactoryGirl.build :content_category, name: 'news'
-    @news = FactoryGirl.create :content, content_category_id: @content_category.id
+    @news = FactoryGirl.create :content, :news
   end
 
   describe '::call' do

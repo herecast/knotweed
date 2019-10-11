@@ -76,7 +76,7 @@ class Organization < ActiveRecord::Base
 
   scope :search_import, lambda {
     includes(
-      :contents_root_content_category_ids_only
+      :contents_content_categories_only
     )
   }
 
@@ -100,8 +100,8 @@ class Organization < ActiveRecord::Base
     { total_view_count: total_view_count }
   end
 
-  has_many :contents_root_content_category_ids_only,
-           -> { select('contents.root_content_category_id, contents.organization_id') },
+  has_many :contents_content_categories_only,
+           -> { select('contents.content_category, contents.organization_id') },
            primary_key: :id,
            foreign_key: :organization_id,
            class_name: :Content
@@ -209,7 +209,7 @@ class Organization < ActiveRecord::Base
       .not_removed
       .where('pubdate IS NOT NULL and pubdate < ?', Time.current)
       .where("channel_type != 'Comment' OR channel_type IS NULL")
-      .where('content_category_id != ?', ContentCategory.find_or_create_by(name: 'campaign'))
+      .where('content_category != ?', 'campaign')
       .where('biz_feed_public = true OR biz_feed_public IS NULL')
   end
 

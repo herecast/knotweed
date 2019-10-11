@@ -26,13 +26,12 @@ describe Api::V3::CommentsController, type: :controller do
       end
 
       context 'when the root content is a talk item' do
-        let(:talk_cat) { FactoryGirl.create :content_category, name: 'talk_of_the_town' }
         before do
           user = FactoryGirl.create :user
-          @content = FactoryGirl.create :content, :located, content_category: talk_cat, created_by: user
-          @comment_content = FactoryGirl.create :content, :located, content_category: talk_cat
+          @content = FactoryGirl.create :content, :talk, created_by: user
+          @comment_content = FactoryGirl.create :content, :located, :comment
           @talk_comment = FactoryGirl.create :comment, content: @comment_content
-          @talk_comment.content.update_attributes(parent_id: @content.id, root_content_category_id: talk_cat)
+          @talk_comment.content.update_attributes(parent_id: @content.id)
         end
 
         it 'returns the correct comments for the root content' do

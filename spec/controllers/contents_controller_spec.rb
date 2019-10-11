@@ -83,7 +83,7 @@ describe ContentsController, type: :controller do
     context 'with a location search param' do
       before do
         @location = FactoryGirl.create :location
-        @content = FactoryGirl.create :content,
+        @content = FactoryGirl.create :content, :news,
                                       location_id: @location.id
       end
 

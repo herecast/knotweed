@@ -14,7 +14,7 @@ module Ugc
     def call
       @record = Content.create(news_params.merge(
                                  created_by: @current_user,
-                                 content_category: news_category,
+                                 content_category: 'news',
                                  origin: Content::UGC_ORIGIN
                                ))
 
@@ -22,10 +22,6 @@ module Ugc
     end
 
     protected
-
-    def news_category
-      ContentCategory.find_or_create_by(name: 'news')
-    end
 
     def news_params
       transformed_params.require(:content).permit(

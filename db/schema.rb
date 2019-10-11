@@ -131,7 +131,6 @@ ActiveRecord::Schema.define(version: 20191003141217) do
     t.bigint   'organization_id'
     t.datetime 'timestamp'
     t.bigint   'parent_id'
-    t.bigint   'content_category_id'
     t.boolean  'has_event_calendar', default: false
     t.bigint   'channelized_content_id'
     t.string   'channel_type', limit: 255
@@ -178,13 +177,14 @@ ActiveRecord::Schema.define(version: 20191003141217) do
     t.integer  'location_id'
     t.string   'mc_campaign_id'
     t.string "ad_service_id"
+    t.string "content_category"
+    t.index ["content_category"], name: "index_contents_on_content_category"
     t.index ["ad_service_id"], name: "index_contents_on_ad_service_id"
     t.index ['authoremail'], name: 'idx_16527_index_contents_on_authoremail', using: :btree
     t.index ['authors'], name: 'idx_16527_authors', using: :btree
     t.index ['channel_id'], name: 'idx_16527_index_contents_on_channel_id', using: :btree
     t.index ['channel_type'], name: 'idx_16527_index_contents_on_channel_type', using: :btree
     t.index ['channelized_content_id'], name: 'idx_16527_index_contents_on_channelized_content_id', using: :btree
-    t.index ['content_category_id'], name: 'idx_16527_content_category_id', using: :btree
     t.index ['created_by_id'], name: 'idx_16527_index_contents_on_created_by_id', using: :btree
     t.index ['organization_id'], name: 'idx_16527_source_id', using: :btree
     t.index ['parent_id'], name: 'idx_16527_index_contents_on_parent_id', using: :btree

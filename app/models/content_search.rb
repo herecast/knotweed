@@ -58,7 +58,7 @@ class ContentSearch
       page: page,
       per_page: per_page,
       where: {
-        content_type: :event,
+        content_type: 'event',
         biz_feed_public: [true, nil],
         starts_at: starts_at_range,
         removed: {

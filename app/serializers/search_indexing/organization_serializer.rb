@@ -3,10 +3,10 @@
 module SearchIndexing
   class OrganizationSerializer < ::Api::V3::OrganizationSerializer
     attributes :archived,
-      :content_category_ids
+      :content_categories
 
-    def content_category_ids
-      object.contents_root_content_category_ids_only.map(&:root_content_category_id).uniq
+    def content_categories
+      object.contents_content_categories_only.map(&:content_category).uniq
     end
   end
 end

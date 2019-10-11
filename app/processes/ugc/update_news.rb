@@ -44,10 +44,6 @@ module Ugc
       end
     end
 
-    def news_category
-      ContentCategory.find_or_create_by(name: 'news')
-    end
-
     def news_params
       @params.require(:content).permit(
         :authors,

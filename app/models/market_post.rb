@@ -27,7 +27,6 @@ class MarketPost < ActiveRecord::Base
   validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
 
   has_one :source, through: :content, class_name: 'Organization', foreign_key: 'organization_id'
-  has_one :content_category, through: :content
   has_many :images, through: :content
 
   geocoded_by :locate_address

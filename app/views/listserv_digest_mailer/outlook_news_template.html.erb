@@ -345,7 +345,7 @@
                                                                 <% end %>
                                                               </td>
                                                               <td style="padding:0px;font-family:Helvetica,sans-serif!important;color:#404347!important">
-                                                                <% if post.content_type == :event %>
+                                                                <% if post.content_type == 'event' %>
                                                                   <%= post.channel.next_or_first_instance.start_date.strftime("%A, %B %e %Y") %>
                                                                 <% else %>
                                                                   <%= post.pubdate.strftime("%A, %B %e %Y") %>

@@ -21,13 +21,11 @@ class Ability
       can :access, :dashboard
 
       can :manage, Content, created_by: user
-      # give access only to event category contents
-      event_category = ContentCategory.find_or_create_by(name: 'event')
-      can :manage, Content, content_category_id: event_category.id
+      can :manage, Content, content_category: 'event'
 
       # Hashie::Mash is returned directly out of searchkick when {load: false}
       can :manage, Hashie::Mash, _type: 'content', created_by: { id: user.id }
-      can :manage, Hashie::Mash, _type: 'content', content_category_id: event_category.id
+      can :manage, Hashie::Mash, _type: 'content', content_category: 'event'
 
       can :manage, BusinessLocation # for event venues
     else

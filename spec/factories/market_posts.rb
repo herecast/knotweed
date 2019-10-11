@@ -48,11 +48,7 @@ FactoryGirl.define do
         e.content.organization = evaluator.organization if evaluator.organization.present?
         e.content.created_by = evaluator.created_by if evaluator.created_by.present?
         e.content.title = evaluator.title if evaluator.title.present?
-        e.content.content_category = if ContentCategory.exists?(name: 'market')
-                                       ContentCategory.find_by name: 'market'
-                                     else
-                                       FactoryGirl.build :content_category, name: 'market'
-                                     end
+        e.content.content_category = 'market'
       end
     end
   end

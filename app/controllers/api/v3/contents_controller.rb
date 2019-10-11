@@ -67,7 +67,7 @@ module Api
         authorize! :update, @content
 
         begin
-          update_process = Content::UGC_PROCESSES['update'].fetch(@content.content_type.to_s)
+          update_process = Content::UGC_PROCESSES['update'].fetch(@content.content_type)
         rescue KeyError
           render json: { error: 'unknown content type' }, status: :unprocessable_entity
           return

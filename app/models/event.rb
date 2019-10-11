@@ -41,7 +41,6 @@ class Event < ActiveRecord::Base
            to: :content
 
   has_one :source, through: :content, class_name: 'Organization', foreign_key: 'organization_id'
-  has_one :content_category, through: :content
   has_many :images, through: :content
 
   belongs_to :venue, class_name: 'BusinessLocation', foreign_key: 'venue_id'

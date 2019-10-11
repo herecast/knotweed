@@ -251,7 +251,7 @@ describe Listserv, type: :model do
 
     it 'should only include `news` content' do
       news_content = FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: location
-      not_news_content = FactoryGirl.create :content, pubdate: 1.hour.ago, location: location
+      not_news_content = FactoryGirl.create :content, :talk, pubdate: 1.hour.ago, location: location
 
       expect(subject).to match_array [news_content]
     end

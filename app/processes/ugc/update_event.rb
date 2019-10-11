@@ -60,7 +60,7 @@ module Ugc
           :sunset_date,
           :url,
           :pubdate,
-          :content_category_id,
+          :content_category,
           :authoremail,
           :authors,
           :created_by,

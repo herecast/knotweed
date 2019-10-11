@@ -48,7 +48,7 @@ module Ugc
           authoremail
           authors
           biz_feed_public
-          content_category_id
+          content_category
           pubdate
           timestamp
           organization_id

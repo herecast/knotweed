@@ -4,7 +4,6 @@ module SearchIndexing
   class ContentSerializer < ::Api::V3::ContentSerializer
     attributes :channel_id,
                :channel_type,
-               :content_category_id,
                :content_category_name,
                :created_by_id,
                :created_by_image_url,
@@ -16,7 +15,6 @@ module SearchIndexing
                :parent_id,
                :pubdate,
                :removed,
-               :root_content_category_id,
                :root_parent_id,
                :has_future_event_instance,
                :organization_order_moment
@@ -28,7 +26,7 @@ module SearchIndexing
     end
 
     def content_category_name
-      object.content_category.try(:name)
+      object.content_category
     end
 
     def deleted
@@ -36,7 +34,7 @@ module SearchIndexing
     end
 
     def in_accepted_category
-      !((object.content_category.try(:name) == 'event') && (object.channel_type != 'Event'))
+      !((object.content_category == 'event') && (object.channel_type != 'Event'))
     end
 
     def created_by_id
@@ -52,7 +50,7 @@ module SearchIndexing
     end
 
     def organization_order_moment
-      object.content_type == :event ? object.latest_activity : object.pubdate
+      object.content_type == 'event' ? object.latest_activity : object.pubdate
     end
   end
 end

@@ -119,13 +119,12 @@ class Listserv < ActiveRecord::Base
   end
 
   def digest_contents(location_ids)
-    news_category_id = ContentCategory.find_or_create_by(name: 'news').id
     content_ids = Organization
       .select('contents.id')
       .joins('INNER JOIN contents ON organizations.id = contents.organization_id')
       .joins('INNER JOIN locations ON contents.location_id = locations.id')
       .where('pubdate IS NOT NULL AND pubdate < NOW() AND pubdate >= ?', digest_date_bound)
-      .where(contents: { root_content_category_id: news_category_id })
+      .where(contents: { content_category: 'news' })
       .where(contents: { location_id: location_ids })
       .where(contents: { removed: false })
       .where('contents.id IN (

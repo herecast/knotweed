@@ -72,10 +72,7 @@ describe Ability, type: :model do
     context 'when is an event manager' do
       before do
         @user           = FactoryGirl.create :user
-        @event_category = FactoryGirl.create :content_category, name: 'event'
         @event          = FactoryGirl.create :event
-        @content        = FactoryGirl.create :content, created_by: @user
-        @event.content.update_attribute(:content_category, @event_category)
 
         @user.add_role :event_manager
       end
@@ -83,13 +80,12 @@ describe Ability, type: :model do
       let(:user) { @user }
 
       let(:hashie_content_event) do
-        Hashie::Mash.new(_type: 'content', content_category_id: @event_category.id)
+        Hashie::Mash.new(_type: 'content', content_category: 'event')
       end
 
       it { is_expected.to be_able_to(:access, :dashboard) }
       it { is_expected.to be_able_to(:manage, @event.content) }
       it { is_expected.to be_able_to(:manage, @event.venue) }
-      it { is_expected.to be_able_to(:manage, @content) }
 
       it { is_expected.to be_able_to(:manage, hashie_content_event) }
     end

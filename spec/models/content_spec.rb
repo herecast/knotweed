@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: contents
@@ -19,7 +18,6 @@
 #  organization_id           :bigint(8)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
-#  content_category_id       :bigint(8)
 #  has_event_calendar        :boolean          default(FALSE)
 #  channelized_content_id    :bigint(8)
 #  channel_type              :string(255)
@@ -65,17 +63,16 @@
 #  location_id               :integer
 #  mc_campaign_id            :string
 #  ad_service_id             :string
+#  content_category          :string
 #
 # Indexes
 #
 #  idx_16527_authors                                     (authors)
-#  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
 #  idx_16527_index_contents_on_created_by                (created_by_id)
-#  idx_16527_index_contents_on_created_by_id             (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
@@ -83,6 +80,7 @@
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
 #  index_contents_on_ad_service_id                       (ad_service_id)
+#  index_contents_on_content_category                    (content_category)
 #  index_contents_on_location_id                         (location_id)
 #
 # Foreign Keys
@@ -144,17 +142,6 @@ describe Content, type: :model do
     end
   end
 
-  describe 'category' do
-    before do
-      @cat = FactoryGirl.create :content_category
-      @content = FactoryGirl.create :content, content_category: @cat
-    end
-
-    it 'should return the name of the attached content category' do
-      expect(@content.category).to eq(@cat.name)
-    end
-  end
-
   describe 'comments' do
     before do
       @content = FactoryGirl.create :content
@@ -167,34 +154,10 @@ describe Content, type: :model do
     end
   end
 
-  describe 'setting content category sets root content category' do
-    before do
-      @cat = FactoryGirl.create :content_category
-      @content = FactoryGirl.build :content, content_category: nil
-    end
-
-    subject do
-      @content.content_category = @cat
-    end
-
-    describe 'set_root_content_category_id' do
-      it 'should set root_content_category_id' do
-        expect { subject }.to change { @content.root_content_category_id }.to @cat.id
-      end
-
-      it 'should set root_content_category_id appropriately if the category is not the root' do
-        cat2 = FactoryGirl.create :content_category
-        @cat.update_attribute :parent_id, cat2.id
-        expect { subject }.to change { @content.root_content_category_id }.to cat2.id
-      end
-    end
-  end
-
   describe 'callbacks for denormalized attributes' do
     before do
       @parent = FactoryGirl.create :content
-      @cat = FactoryGirl.create :content_category
-      @content = FactoryGirl.build :content, parent: @parent, content_category: @cat
+      @content = FactoryGirl.build :content, parent: @parent
     end
 
     subject { @content.save }
@@ -229,10 +192,10 @@ describe Content, type: :model do
     describe 'authors' do
       before do
         @user = FactoryGirl.create :user
-        @news = FactoryGirl.create :content,
-                                   content_category: FactoryGirl.create(:content_category, name: 'news'),
+        @news = FactoryGirl.create :content, :news,
                                    created_by: @user
-        @not_news = FactoryGirl.create :content, created_by: @user
+        @not_news = FactoryGirl.create :content, content_category: 'talk_of_the_town',
+          created_by: @user
       end
 
       it 'should index authors for news content' do
@@ -274,8 +237,6 @@ describe Content, type: :model do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true
         User.current = @user
-        @news_content_category = FactoryGirl.create :content_category, name: 'news'
-        @event_content_category = FactoryGirl.create :content_category, name: 'event'
       end
 
       it 'should not increment the view count' do
@@ -283,13 +244,13 @@ describe Content, type: :model do
       end
 
       it 'should not increment if the root content is news' do
-        @published_content.update_attributes(content_category: @news_content_category)
+        @published_content.update_attributes(content_category: 'news')
         @published_content.save!
         expect { @published_content.increment_view_count! }.not_to change { @published_content.view_count }
       end
 
       it 'should increment view count for other channels' do
-        @published_content.update_attributes(content_category: @event_content_category)
+        @published_content.update_attributes(content_category: 'event')
         @published_content.save!
         expect { @published_content.increment_view_count! }.to change { @published_content.view_count }
       end
@@ -396,7 +357,7 @@ describe Content, type: :model do
       it "returns 'Post by...' title" do
         user = FactoryGirl.create :user, name: 'Han Solo'
         content = FactoryGirl.create :content, title: '[Hoth]',
-                                               created_by: user
+                                               created_by: user, content_category: 'talk_of_the_town'
         expect(content.sanitized_title).to include 'Han Solo'
       end
     end
@@ -435,7 +396,9 @@ describe Content, type: :model do
 
   describe '#author_name' do
     before do
-      @content = FactoryGirl.create :content, authors: Faker::Name.name
+      # default cat is news which changes this behavior, so specifying another category
+      @content = FactoryGirl.create :content, content_category: 'talk_of_the_town',
+        authors: Faker::Name.name
       @content.update_column :created_by_id, nil
     end
     let(:user) { FactoryGirl.create :user }
@@ -459,7 +422,7 @@ describe Content, type: :model do
     context 'for news UGC content' do
       before do
         @content.origin = Content::UGC_ORIGIN
-        @content.content_category = FactoryGirl.build :content_category, name: 'news'
+        @content.content_category = 'news'
       end
 
       context 'with authors populated' do
@@ -480,47 +443,25 @@ describe Content, type: :model do
         end
       end
     end
-
-    context 'for content with a root category of news' do
-      before do
-        @content.root_content_category = FactoryGirl.build :content_category, name: 'news'
-        @content.created_by = user
-      end
-
-      it { should eql @content.authors }
-    end
   end
 
   describe '#is_news_ugc?' do
-    let(:news_cat) { FactoryGirl.build :content_category, name: 'news' }
     subject { content.is_news_ugc? }
     describe 'for news UGC' do
-      let (:content) do
-        FactoryGirl.build :content, origin: Content::UGC_ORIGIN,
-                                    content_category: news_cat
-      end
+      let (:content) { FactoryGirl.build :content, :news, origin: Content::UGC_ORIGIN }
+
       it { should be true }
     end
 
     describe 'for other content' do
-      let(:content) { FactoryGirl.build :content }
+      let(:content) { FactoryGirl.build :content, content_category: 'event' }
       it { should be false }
-    end
-  end
-
-  describe '#is_news_child_category?' do
-    let(:root_content) { FactoryGirl.build :content_category, name: 'news' }
-    subject { content.is_news_child_category? }
-    describe 'check if content has a root_category of `news`' do
-      let(:content) { FactoryGirl.build :content, root_content_category: root_content }
-      it { should be true }
     end
   end
 
   describe '#current_daily_report' do
     before do
-      @content_category = FactoryGirl.build :content_category, name: 'news'
-      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+      @news = FactoryGirl.create :content, :news
     end
 
     subject { @news.current_daily_report }
@@ -550,8 +491,7 @@ describe Content, type: :model do
 
   describe '#find_or_create_daily_report' do
     before do
-      @content_category = FactoryGirl.build :content_category, name: 'news'
-      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+      @news = FactoryGirl.create :content, :news
     end
 
     subject { @news.find_or_create_daily_report }
@@ -664,7 +604,7 @@ describe Content, type: :model do
 
     subject { @content.built_view_count }
 
-    context 'when root category is campaign' do
+    context 'when content_category is campaign' do
       before do
         @content = FactoryGirl.create :content, :campaign
         promotable = FactoryGirl.create :promotion_banner,

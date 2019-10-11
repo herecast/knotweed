@@ -41,8 +41,7 @@
           .span6
             .row-fluid
               .span12
-                %div{ id: 'news-child-id', data: { news_child_ids: @news_child_ids } }
-                = f.association :content_category, label_method: :label
+                = f.input :content_category, collection: Content::CONTENT_CATEGORIES, label_method: :titlecase
             .row-fluid
               .span12
                 = f.association :location, collection: Location.where(consumer_active: true).order(state: :asc, city: :asc), prompt: "Choose a Location", input_html: { class: "chosen-select span12" }, label: "Location"

@@ -14,11 +14,10 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
 
-    @content_categories = ContentCategory.all
     @locations = Location.accessible_by(current_ability).consumer_active.order('state ASC, city ASC')
 
     search_conditions = session[:contents_search].try(:dup) || {}
-    search_conditions[:content_category_id_not_eq] = ContentCategory.find_by_name('campaign').try(:id)
+    search_conditions[:content_category_not_eq] = 'campaign'
 
     if search_conditions[:event_instances_start_date_gteq].present? || search_conditions[:event_instances_end_date_lteq].present?
       search_conditions[:channel_type_eq] = 'Event'
@@ -28,7 +27,7 @@ class ContentsController < ApplicationController
 
     if session[:contents_search].present?
       @contents = @search.result(distinct: true)
-                         .includes(:organization, :created_by, :content_category, :root_content_category, :channel)
+                         .includes(:organization, :created_by, :channel)
                          .order('pubdate DESC').page(params[:page])
                          .per(100)
     else
@@ -37,8 +36,7 @@ class ContentsController < ApplicationController
   end
 
   def edit
-    @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
-    @content = Content.includes(:location, :content_category).find(params[:id])
+    @content = Content.includes(:location).find(params[:id])
     load_event_instances
     authorize! :edit, @content
   end
@@ -96,7 +94,7 @@ class ContentsController < ApplicationController
   def content_params
     params.require(:content).permit(
       :title,
-      :content_category_id,
+      :content_category,
       :organization_id,
       :category_reviewed,
       :has_event_calendar,
