@@ -77,7 +77,8 @@ RSpec.describe 'User API Endpoints', type: :request do
               }
             end,
             organization_hides: [],
-            feed_card_size: user.feed_card_size
+            feed_card_size: user.feed_card_size,
+            publisher_agreement_confirmed: user.publisher_agreement_confirmed
           }
         )
       end

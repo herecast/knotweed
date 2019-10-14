@@ -720,6 +720,9 @@ ActiveRecord::Schema.define(version: 20191003141217) do
     t.string   'first_name'
     t.string   'last_name'
     t.string   'feed_card_size'
+    t.boolean  'publisher_agreement_confirmed',      default: false
+    t.datetime 'publisher_agreement_confirmed_at'
+    t.string   'publisher_agreement_version'
     t.index ['email'], name: 'idx_16858_index_users_on_email', unique: true, using: :btree
     t.index ['public_id'], name: 'idx_16858_index_users_on_public_id', unique: true, using: :btree
     t.index ['reset_password_token'], name: 'idx_16858_index_users_on_reset_password_token', unique: true, using: :btree

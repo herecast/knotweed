@@ -98,6 +98,7 @@ Rails.application.routes.draw do
         resources :metrics, only: :index, path: '/:user_id/metrics'
         resources :comments, only: :index, path: '/:id/comments'
         resources :contents, only: :index, path: '/:id/contents'
+        resources :publisher_agreements, only: :create, path: '/:user_id/publisher_agreements'
       end
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       post 'promotion_banners/:promotion_banner_id/track_load', to: 'promotion_banners#track_load', as: :track_load

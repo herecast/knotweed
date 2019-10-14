@@ -20,7 +20,8 @@ module Api
                  :is_blogger,
                  :organization_subscriptions,
                  :organization_hides,
-                 :feed_card_size
+                 :feed_card_size,
+                 :publisher_agreement_confirmed
 
       def listserv_id
         object.location.try(:listserv).try(:id)
