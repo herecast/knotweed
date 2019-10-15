@@ -10,6 +10,7 @@ module Api
 
         @organization = Organization.new(create_organization_params)
         if @organization.save
+          current_user.update_attribute(:handle, @organization.handle_for_user)
           provision_user_as_manager_and_blogger
           schedule_blogger_welcome_emails
           create_or_update_business_location

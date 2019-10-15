@@ -51,6 +51,7 @@
 #  publisher_agreement_confirmed    :boolean          default(FALSE)
 #  publisher_agreement_confirmed_at :datetime
 #  publisher_agreement_version      :string
+#  handle                           :string
 #
 # Indexes
 #
@@ -424,6 +425,20 @@ describe User, type: :model do
         it "is valid" do
           expect(subject).to be_valid
         end
+      end
+    end
+
+    describe "handle" do
+      before do
+        @handle = 'Jabba'
+        @initial_user = FactoryGirl.create :user,
+          handle: @handle
+      end
+
+      subject { FactoryGirl.build(:user, handle: @handle.downcase) }
+
+      it "ignores case for uniqueness on handles" do
+        expect(subject).to_not be_valid
       end
     end
   end

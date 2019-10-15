@@ -11,6 +11,7 @@ class RegistrationsController < Devise::RegistrationsController
           user.confirmed_at = Time.current
           user.nda_agreed_at = Time.current
           user.agreed_to_nda = true
+          user.handle = user.email.split('@')[0]
           if user.save
             add_user_to_master_list(user)
             user.ensure_authentication_token
@@ -24,6 +25,7 @@ class RegistrationsController < Devise::RegistrationsController
           }
           user.nda_agreed_at = Time.zone.now
           user.agreed_to_nda = true
+          user.handle = user.email.split('@')[0]
 
           if user.save
             render(json: res, status: 201) && return

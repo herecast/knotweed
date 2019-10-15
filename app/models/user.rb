@@ -51,6 +51,7 @@
 #  publisher_agreement_confirmed    :boolean          default(FALSE)
 #  publisher_agreement_confirmed_at :datetime
 #  publisher_agreement_version      :string
+#  handle                           :string
 #
 # Indexes
 #
@@ -87,9 +88,11 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  validates_presence_of :location
+  validates_presence_of :location, :handle
   validates :public_id, uniqueness: true, allow_blank: true
   validates :avatar, image_minimum_size: true
+
+  validates_uniqueness_of :handle, case_sensitive: false
 
   after_commit :update_subscriptions_locations,
                :trigger_content_reindex_if_avatar_changed!,
@@ -214,7 +217,8 @@ class User < ActiveRecord::Base
         password: Devise.friendly_token[0, 20],
         name: auth[:name],
         nda_agreed_at: Time.zone.now,
-        agreed_to_nda: true
+        agreed_to_nda: true,
+        handle: auth[:email]&.split('@')&.[](0)
       }.merge(registration_attributes))
 
       if user.valid?

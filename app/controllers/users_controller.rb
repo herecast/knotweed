@@ -121,7 +121,8 @@ class UsersController < ApplicationController
       :fullname,
       :nickname,
       :epayment,
-      :w9
+      :w9,
+      :handle
     ).tap do |attrs|
       attrs[:role_ids] = []
       if params[:user][:roles].present?

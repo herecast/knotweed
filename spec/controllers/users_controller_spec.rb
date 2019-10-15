@@ -307,7 +307,19 @@ describe UsersController, type: :controller do
       @location = FactoryGirl.create :location
     end
 
-    subject { post :create, params: { user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: @location.id, @role.name => 'on' } } }
+    let(:params) { {
+      user: {
+        name: 'Ya boi Tessek',
+        email: 'tessek@squidhead.com',
+        password: '12345678',
+        password_confirmation: '12345678',
+        location_id: @location.id,
+        @role.name => 'on',
+        handle: 'tessek'
+      }
+    } }
+
+    subject { post :create, params: params }
 
     context 'when creation succeeds' do
       it 'redirects to user path' do

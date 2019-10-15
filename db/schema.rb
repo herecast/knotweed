@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191003141217) do
+ActiveRecord::Schema.define(version: 20191014135952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -723,6 +723,7 @@ ActiveRecord::Schema.define(version: 20191003141217) do
     t.boolean  'publisher_agreement_confirmed',      default: false
     t.datetime 'publisher_agreement_confirmed_at'
     t.string   'publisher_agreement_version'
+    t.string   'handle'
     t.index ['email'], name: 'idx_16858_index_users_on_email', unique: true, using: :btree
     t.index ['public_id'], name: 'idx_16858_index_users_on_public_id', unique: true, using: :btree
     t.index ['reset_password_token'], name: 'idx_16858_index_users_on_reset_password_token', unique: true, using: :btree

@@ -221,6 +221,10 @@ class Organization < ActiveRecord::Base
     counted_posts.count
   end
 
+  def handle_for_user
+    name.gsub(' ', '').gsub(',', '').gsub("’", '').gsub('?', '').gsub('/', '').gsub(':', '')
+  end
+
   private
 
   def trigger_content_reindex_if_name_or_profile_image_changed!

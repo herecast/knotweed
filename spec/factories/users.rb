@@ -51,6 +51,7 @@
 #  publisher_agreement_confirmed    :boolean          default(FALSE)
 #  publisher_agreement_confirmed_at :datetime
 #  publisher_agreement_version      :string
+#  handle                           :string
 #
 # Indexes
 #
@@ -66,6 +67,7 @@ FactoryGirl.define do
     name Faker::Name.name
     fullname Faker::Name.name
     sequence(:email) { |n| "email#{n}@test.com" }
+    sequence(:handle) { |n| "handle#{n}" }
     password 'changeme'
     password_confirmation 'changeme'
     # required if the Devise Confirmable module is used

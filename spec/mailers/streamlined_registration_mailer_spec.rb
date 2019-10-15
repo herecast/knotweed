@@ -12,7 +12,8 @@ RSpec.describe StreamlinedRegistrationMailer do
                        email: Faker::Internet.email,
                        location: location,
                        password: @password,
-                       source: 'market_message')
+                       source: 'market_message',
+                       handle: 'handle')
       @user.skip_confirmation!
       @user.save!
       @user.send(:generate_confirmation_token)
