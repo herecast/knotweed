@@ -68,20 +68,6 @@ ActiveRecord::Schema.define(version: 20191014135952) do
     t.datetime 'updated_at', null: false
   end
 
-  create_table 'content_categories', id: :bigserial, force: :cascade do |t|
-    t.string   'name',       limit: 255
-    t.datetime 'created_at',                            null: false
-    t.datetime 'updated_at',                            null: false
-    t.bigint   'parent_id'
-    t.boolean  'active', default: true
-  end
-
-  create_table 'content_categories_organizations', id: false, force: :cascade do |t|
-    t.bigint 'content_category_id'
-    t.bigint 'organization_id'
-    t.index %w[content_category_id organization_id], name: 'idx_16559_index_on_content_category_id_and_publication_id', using: :btree
-  end
-
   create_table 'content_metrics', force: :cascade do |t|
     t.integer  'content_id'
     t.string   'event_type'
@@ -135,7 +121,6 @@ ActiveRecord::Schema.define(version: 20191014135952) do
     t.bigint   'channelized_content_id'
     t.string   'channel_type', limit: 255
     t.bigint   'channel_id'
-    t.bigint   'root_content_category_id'
     t.bigint   'view_count',                            default: 0
     t.bigint   'comment_count',                         default: 0
     t.bigint   'commenter_count',                       default: 0
@@ -189,7 +174,6 @@ ActiveRecord::Schema.define(version: 20191014135952) do
     t.index ['organization_id'], name: 'idx_16527_source_id', using: :btree
     t.index ['parent_id'], name: 'idx_16527_index_contents_on_parent_id', using: :btree
     t.index ['pubdate'], name: 'idx_16527_pubdate', using: :btree
-    t.index ['root_content_category_id'], name: 'idx_16527_index_contents_on_root_content_category_id', using: :btree
     t.index ['root_parent_id'], name: 'idx_16527_index_contents_on_root_parent_id', using: :btree
     t.index ['title'], name: 'idx_16527_title', using: :btree
   end
