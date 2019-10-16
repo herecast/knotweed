@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ListservDigestJob < ApplicationJob
-  def perform(listserv, timestamp)
+  def perform(listserv)
     @listserv = listserv
 
     locations = @listserv.locations

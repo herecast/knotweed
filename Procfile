@@ -1,3 +1,3 @@
 web: bundle exec puma -e production -C config/puma.rb
-worker: bundle exec sidekiq -i 0 -e production
+worker: bundle exec sidekiq -e production
 release: bash ./release-tasks.sh

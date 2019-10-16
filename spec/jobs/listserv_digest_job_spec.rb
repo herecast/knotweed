@@ -6,7 +6,7 @@ RSpec.describe ListservDigestJob do
   context 'Given a listserv model' do
     let(:listserv) { FactoryGirl.create :listserv, send_digest: true, digest_reply_to: 'test@test.com',
                         digest_subject: 'This is the STUFF!', last_digest_generation_time: 1.day.ago }
-    subject { described_class.new.perform(listserv, Time.current.to_i) }
+    subject { described_class.new.perform(listserv) }
 
     before do
       # mock so we aren't making api calls
