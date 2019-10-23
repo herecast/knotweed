@@ -45,6 +45,7 @@ p 'Created locations'
 User.create!(
   name: 'Admin',
   email: 'admin@subtext.org',
+  handle: Faker::Internet.username,
   confirmed_at: Time.now,
   password: 'password',
   password_confirmation: 'password',
@@ -57,6 +58,7 @@ p 'Created admin@subtext.org admin user'
 u = User.create!(
   name: Faker::Name.name,
   email: Faker::Internet.email,
+  handle: Faker::Internet.username,
   confirmed_at: Time.now,
   password: 'password',
   password_confirmation: 'password',
