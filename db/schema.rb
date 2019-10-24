@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191021135952) do
+ActiveRecord::Schema.define(version: 20191022172142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -403,6 +403,8 @@ ActiveRecord::Schema.define(version: 20191021135952) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
+    t.integer  'caster_id'
+    t.index ['caster_id'], name: 'index_organization_subscriptions_on_caster_id'
     t.index ['organization_id'], name: 'index_organization_subscriptions_on_organization_id'
     t.index %w[user_id organization_id], name: 'index_organization_subscriptions_on_user_id_and_organization_id', unique: true
     t.index ['user_id'], name: 'index_organization_subscriptions_on_user_id'
@@ -708,6 +710,7 @@ ActiveRecord::Schema.define(version: 20191021135952) do
     t.datetime 'publisher_agreement_confirmed_at'
     t.string   'publisher_agreement_version'
     t.string   'handle'
+    t.string   'mc_followers_segment_id'
     t.index ['email'], name: 'idx_16858_index_users_on_email', unique: true, using: :btree
     t.index ['public_id'], name: 'idx_16858_index_users_on_public_id', unique: true, using: :btree
     t.index ['reset_password_token'], name: 'idx_16858_index_users_on_reset_password_token', unique: true, using: :btree

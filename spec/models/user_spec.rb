@@ -52,6 +52,7 @@
 #  publisher_agreement_confirmed_at :datetime
 #  publisher_agreement_version      :string
 #  handle                           :string
+#  mc_followers_segment_id          :string
 #
 # Indexes
 #

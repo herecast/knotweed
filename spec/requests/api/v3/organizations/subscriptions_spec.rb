@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Organization Subscriptions Endpoints', type: :request do
-  let(:organization) { FactoryGirl.create :organization }
+  let(:caster) { FactoryGirl.create :caster }
+  let(:organization) { FactoryGirl.create :organization, user_id: caster.id }
   let(:user) { FactoryGirl.create :user }
   let(:headers) { auth_headers_for(user) }
 

@@ -64,30 +64,14 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :user do
+  factory :caster do
     name Faker::Name.name
     fullname Faker::Name.name
-    sequence(:email) { |n| "email#{n}@test.com" }
-    sequence(:handle) { |n| "handle#{n}" }
+    email { "email-#{rand(500)}@test.com" }
+    handle { "handle-#{rand(500)}" }
     password 'changeme'
     password_confirmation 'changeme'
-    # required if the Devise Confirmable module is used
     confirmed_at Time.current
     location
-
-    factory :admin do
-      name 'Test Admin'
-      after(:create) do |user|
-        user.add_role :admin
-      end
-    end
-
-    factory :organization_admin do
-      name 'Test Organization Admin'
-      after(:create) do |user|
-        org = FactoryGirl.create :organization
-        user.add_role :manager, org
-      end
-    end
   end
 end

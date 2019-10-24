@@ -172,6 +172,7 @@ class Content < ActiveRecord::Base
   end
 
   belongs_to :location
+  belongs_to :caster, foreign_key: 'created_by_id'
 
   has_many :content_reports
   has_many :payments
@@ -473,7 +474,7 @@ class Content < ActiveRecord::Base
   end
 
   def should_notify_subscribers?
-    mc_campaign_id.nil? && organization.active_subscriber_count > 0
+    mc_campaign_id.nil? && caster.active_follower_count > 0
   end
 
   def like_count

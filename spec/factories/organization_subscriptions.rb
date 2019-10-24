@@ -11,9 +11,11 @@
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  deleted_at       :datetime
+#  caster_id        :integer
 #
 # Indexes
 #
+#  index_organization_subscriptions_on_caster_id                    (caster_id)
 #  index_organization_subscriptions_on_organization_id              (organization_id)
 #  index_organization_subscriptions_on_user_id                      (user_id)
 #  index_organization_subscriptions_on_user_id_and_organization_id  (user_id,organization_id) UNIQUE
@@ -29,6 +31,6 @@
 FactoryGirl.define do
   factory :organization_subscription do
     user
-    organization
+    caster
   end
 end

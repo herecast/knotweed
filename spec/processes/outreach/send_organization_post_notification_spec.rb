@@ -6,10 +6,9 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
   describe '::call' do
     before do
       @mc_segment_id = 'mc-nj345k'
-      @organization = FactoryGirl.create :organization,
-                                         mc_segment_id: @mc_segment_id
-      @content = FactoryGirl.create :content, :news,
-                                    organization_id: @organization.id
+      @caster = FactoryGirl.create :caster, mc_followers_segment_id: @mc_segment_id
+      @organization = FactoryGirl.create :organization, user_id: @caster.id
+      @content = FactoryGirl.create :content, :news, created_by: @caster
       @mc_campaign_id = 'mc-243nk'
       @campaigns = double(
         create: { 'id' => @mc_campaign_id },
@@ -28,16 +27,16 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
       Outreach::SendOrganizationPostNotification.call(@content)
     end
 
-    context 'when Organization has no subscribers' do
+    context 'when Caster has no subscribers' do
       it 'raises error' do
-        expect { subject }.to raise_error 'Organization has no subscribers'
+        expect { subject }.to raise_error 'Caster has no subscribers'
       end
     end
 
-    context 'when Organization has subscribers' do
+    context 'when Caster has subscribers' do
       before do
         FactoryGirl.create :organization_subscription,
-                           organization_id: @organization.id
+                           caster_id: @caster.id
       end
 
       it 'calls to Mailchimp to create campaign' do

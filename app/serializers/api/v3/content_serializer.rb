@@ -237,7 +237,7 @@ module Api
           description: object.organization&.description,
           city: object.organization&.business_locations&.first&.city,
           state: object.organization&.business_locations&.first&.state,
-          active_subscriber_count: object.organization&.active_subscriber_count
+          active_subscriber_count: object.caster&.active_follower_count
         }
       end
 

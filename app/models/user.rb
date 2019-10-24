@@ -52,6 +52,7 @@
 #  publisher_agreement_confirmed_at :datetime
 #  publisher_agreement_version      :string
 #  handle                           :string
+#  mc_followers_segment_id          :string
 #
 # Indexes
 #
@@ -69,6 +70,8 @@ class User < ActiveRecord::Base
   has_many :payments, foreign_key: 'paid_to_id'
   has_many :organization_subscriptions
   has_many :organization_hides
+
+  has_many :caster_followers, class_name: 'OrganizationSubscription', foreign_key: 'caster_id'
 
   has_one :organization
 
@@ -252,6 +255,10 @@ class User < ActiveRecord::Base
 
   def can_manage_organization?(id)
     roles.where(name: 'manager', resource_type: 'Organization', resource_id: id).present?
+  end
+
+  def active_follower_count
+    caster_followers.active.count
   end
 
   private

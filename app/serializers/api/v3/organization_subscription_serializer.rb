@@ -9,15 +9,15 @@ module Api
                  :organization_profile_image_url
 
       def organization_id
-        object.organization.id
+        object.caster&.organization&.id
       end
 
       def organization_name
-        object.organization.name
+        object.caster&.organization&.name
       end
 
       def organization_profile_image_url
-        object.organization.profile_image_url
+        object.caster&.organization&.profile_image_url
       end
     end
   end

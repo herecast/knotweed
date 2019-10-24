@@ -5,12 +5,14 @@ require 'rails_helper'
 RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearch: true do
   describe '::call' do
     before do
-      @organization = FactoryGirl.create :organization
+      @mc_segment_id = 'mc-83j29'
+      @caster = FactoryGirl.create :caster
+      @organization = FactoryGirl.create :organization, user_id: @caster.id
       @user = FactoryGirl.create :user
       @org_subscription = FactoryGirl.build :organization_subscription,
                                             user_id: @user.id,
-                                            organization_id: @organization.id
-      @mc_segment_id = 'mc-83j29'
+                                            caster_id: @caster.id
+
       @lists = double(
         static_segment_add: { 'id' => @mc_segment_id },
         member_info: { 'success_count' => 0 },
@@ -32,7 +34,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
 
     it 'creates mailchimp_segment_id for Organization' do
       expect { subject }.to change {
-        @organization.reload.mc_segment_id
+        @caster.reload.mc_followers_segment_id
       }.to @mc_segment_id
     end
 
@@ -56,13 +58,13 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
     end
 
     it "calls for narrow reindex of Organization" do
-      expect_any_instance_of(Organization).to receive(:reindex).exactly(2).times
+      expect_any_instance_of(Organization).to receive(:reindex)
       subject
     end
 
-    context 'when Organization has mc_segment_id' do
+    context 'when Caster has mc_followers_segment_id' do
       before do
-        @organization.update_attribute(:mc_segment_id, @mc_segment_id)
+        @caster.update_attribute(:mc_followers_segment_id, @mc_segment_id)
       end
 
       it 'does not add segment to master Mailchimp list' do

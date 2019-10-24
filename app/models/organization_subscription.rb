@@ -11,9 +11,11 @@
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  deleted_at       :datetime
+#  caster_id        :integer
 #
 # Indexes
 #
+#  index_organization_subscriptions_on_caster_id                    (caster_id)
 #  index_organization_subscriptions_on_organization_id              (organization_id)
 #  index_organization_subscriptions_on_user_id                      (user_id)
 #  index_organization_subscriptions_on_user_id_and_organization_id  (user_id,organization_id) UNIQUE
@@ -26,8 +28,10 @@
 
 class OrganizationSubscription < ApplicationRecord
   belongs_to :user, optional: false
-  belongs_to :organization, optional: false
-  validates :user_id, uniqueness: { scope: :organization_id }
+  belongs_to :caster, optional: false
+  belongs_to :organization
+
+  validates :user_id, uniqueness: { scope: :caster_id }
 
   scope :active, -> { where(deleted_at: nil) }
 

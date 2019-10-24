@@ -61,33 +61,8 @@
 #  idx_16858_index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
-FactoryGirl.define do
-  factory :user do
-    name Faker::Name.name
-    fullname Faker::Name.name
-    sequence(:email) { |n| "email#{n}@test.com" }
-    sequence(:handle) { |n| "handle#{n}" }
-    password 'changeme'
-    password_confirmation 'changeme'
-    # required if the Devise Confirmable module is used
-    confirmed_at Time.current
-    location
-
-    factory :admin do
-      name 'Test Admin'
-      after(:create) do |user|
-        user.add_role :admin
-      end
-    end
-
-    factory :organization_admin do
-      name 'Test Organization Admin'
-      after(:create) do |user|
-        org = FactoryGirl.create :organization
-        user.add_role :manager, org
-      end
-    end
+class Caster < User
+  def mc_followers_segment_name
+    "#{id}-caster-segment"
   end
 end

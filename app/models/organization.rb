@@ -200,7 +200,7 @@ class Organization < ActiveRecord::Base
   end
 
   def active_subscriber_count
-    organization_subscriptions.active.count
+    user&.active_follower_count || 0
   end
 
   # counts MarketPost, News, and Events -- not comments or ads

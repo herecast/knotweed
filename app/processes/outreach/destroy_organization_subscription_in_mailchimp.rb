@@ -10,21 +10,21 @@ module Outreach
 
     def initialize(organization_subscription)
       @organization_subscription = organization_subscription
-      @organization              = organization_subscription.organization
+      @caster                    = organization_subscription.caster
       @user                      = organization_subscription.user
     end
 
     def call
-      mailchimp_organization_segment_delete_member
+      mailchimp_caster_segment_delete_member
       @organization_subscription.update_attribute(:deleted_at, Time.current)
-      @organization.reindex(:active_subscriber_count_data)
+      @caster.organization&.reindex(:active_subscriber_count_data)
     end
 
     private
 
-    def mailchimp_organization_segment_delete_member
+    def mailchimp_caster_segment_delete_member
       mailchimp_connection.lists.static_segment_members_del(mailchimp_config.master_list_id,
-                                                            @organization.mc_segment_id,
+                                                            @caster.mc_followers_segment_id,
                                                             [{ email: @user.email }])
     end
   end

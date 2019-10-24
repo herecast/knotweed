@@ -6,11 +6,13 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
   describe '::call' do
     before do
       @mc_segment_id = 'mc-ndjk21'
-      @organization = FactoryGirl.create :organization, mc_segment_id: @mc_segment_id
       @user = FactoryGirl.create :user
+      @caster = FactoryGirl.create :caster, mc_followers_segment_id: @mc_segment_id
+      @organization = FactoryGirl.create :organization, user_id: @caster.id
       @org_subscription = FactoryGirl.create :organization_subscription,
                                              user_id: @user.id,
-                                             organization_id: @organization.id
+                                             caster_id: @caster.id
+
       @lists = double(static_segment_members_del: true)
       mailchimp = double(lists: @lists)
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)

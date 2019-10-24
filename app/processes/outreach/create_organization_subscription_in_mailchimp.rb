@@ -10,42 +10,42 @@ module Outreach
 
     def initialize(organization_subscription)
       @organization_subscription = organization_subscription
-      @organization              = organization_subscription.organization
+      @caster                    = organization_subscription.caster
       @user                      = organization_subscription.user
     end
 
     def call
-      conditionally_create_mailchimp_organization_segment
+      conditionally_create_mailchimp_caster_segment
       conditionally_add_user_to_mailchimp_master_list(@user)
-      add_member_to_mailchimp_organization_segment
-      conditionally_undelete_org_subscription
-      @organization.reindex(:active_subscriber_count_data)
+      add_member_to_mailchimp_caster_segment
+      conditionally_undelete_caster_subscription
+      @caster.organization&.reindex(:active_subscriber_count_data)
       true
     end
 
     private
 
-    def conditionally_create_mailchimp_organization_segment
-      if @organization.mc_segment_id.nil?
+    def conditionally_create_mailchimp_caster_segment
+      if @caster.mc_followers_segment_id.nil?
         response = mailchimp_connection.lists.static_segment_add(mailchimp_config.master_list_id,
-                                                                 @organization.mc_segment_name)
-        @organization.update_attribute(:mc_segment_id, response['id'])
+                                                                 @caster.mc_followers_segment_name)
+        @caster.update_attribute(:mc_followers_segment_id, response['id'])
       end
     end
 
-    def add_member_to_mailchimp_organization_segment
+    def add_member_to_mailchimp_caster_segment
       mailchimp_connection.lists.static_segment_members_add(mailchimp_config.master_list_id,
-                                                            @organization.mc_segment_id,
+                                                            @caster.mc_followers_segment_id,
                                                             [{ email: @user.email }])
     end
 
-    def conditionally_undelete_org_subscription
-      if organization_subscription_persisted_and_deleted?
+    def conditionally_undelete_caster_subscription
+      if caster_subscription_persisted_and_deleted?
         @organization_subscription.deleted_at = nil
       end
     end
 
-    def organization_subscription_persisted_and_deleted?
+    def caster_subscription_persisted_and_deleted?
       @organization_subscription.persisted? && \
         @organization_subscription.deleted_at.present?
     end

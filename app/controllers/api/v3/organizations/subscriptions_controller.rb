@@ -48,10 +48,15 @@ module Api
       end
 
       def new_org_subscription
-        OrganizationSubscription.find_or_initialize_by(
-          organization_id: params[:organization_id],
-          user_id: current_user.id
-        )
+        organization = Organization.find(params[:organization_id])
+        if organization.user_id.present?
+          OrganizationSubscription.find_or_initialize_by(
+            caster_id: organization.user_id,
+            user_id: current_user.id
+          )
+        else
+          raise ActiveRecord::RecordNotFound
+        end
       end
 
       def org_query_opts

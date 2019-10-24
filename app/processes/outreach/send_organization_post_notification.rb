@@ -17,6 +17,7 @@ module Outreach
     def initialize(content)
       @content           = content
       @organization      = content.organization
+      @caster            = content.created_by
       @title             = content.title
       @post_url          = "#{@organization.profile_link}/#{content.id}"
       @profile_image_url = @organization.profile_image_url
@@ -32,8 +33,8 @@ module Outreach
     private
 
     def raise_error_if_organization_has_no_active_subscribers
-      if @organization.active_subscriber_count == 0
-        raise 'Organization has no subscribers'
+      if @caster.active_follower_count == 0
+        raise 'Caster has no subscribers'
       end
     end
 
@@ -54,7 +55,7 @@ module Outreach
                                             }, {
                                               html: ERB.new(File.read(html_path)).result(binding)
                                             },
-                                            saved_segment_id: @organization.mc_segment_id)
+                                            saved_segment_id: @caster.mc_followers_segment_id)
     end
 
     def formatted_subject(subject)

@@ -12,9 +12,11 @@ RSpec.describe ManageContentOnFirstServe do
 
     context 'when first_served_at is nil' do
       before do
+        @caster = FactoryGirl.create :caster
         @organization = FactoryGirl.create :organization
         @content = FactoryGirl.create :content,
-                                      organization_id: @organization.id
+                                      organization_id: @organization.id,
+                                      created_by: @caster
         allow(SlackService).to receive(
           :send_published_content_notification
         ).and_return(true)
@@ -41,10 +43,10 @@ RSpec.describe ManageContentOnFirstServe do
       end
 
       context 'when content has no mc_campaign_id' do
-        context 'when content Org has subscribers' do
+        context 'when Caster has subscribers' do
           before do
             user = FactoryGirl.create :user
-            @organization.organization_subscriptions.create(
+            @caster.caster_followers.create(
               user_id: user.id
             )
           end
