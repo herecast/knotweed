@@ -77,7 +77,8 @@ class Caster < User
       id: id,
       name: name || organization&.name,
       handle: handle,
-      description: description || organization&.description
+      description: description || organization&.description,
+      avatar_image_url: avatar&.url || organization&.profile_image_url
     }
   end
 
