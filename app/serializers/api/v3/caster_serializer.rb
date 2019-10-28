@@ -21,7 +21,7 @@ module Api
                  :active_follower_count
 
       def avatar_image_url
-        object.avatar&.url
+        object.avatar&.url || object.organization&.profile_image_url
       end
 
       def background_image_url

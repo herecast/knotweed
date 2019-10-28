@@ -25,7 +25,7 @@ RSpec.describe IntercomService do
         email: content.created_by.email,
         created_at: Time.current.to_i,
         metadata: {
-          "organization_name": content.organization.name,
+          "caster_handle": content.created_by.handle,
           "number_of_published_posts": 0,
           "post_title": content.title
         }

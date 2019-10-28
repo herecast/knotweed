@@ -4,7 +4,7 @@ module IntercomService
   module_function
 
   def send_published_content_event(content)
-    number_of_published_posts = Content.where(organization_id: content.organization.id)
+    number_of_published_posts = Content.where(created_by_id: content.created_by_id)
                                        .where.not(first_served_at: nil)
                                        .count
 
@@ -31,7 +31,7 @@ module IntercomService
       email: content.created_by.email,
       created_at: Time.current.to_i,
       metadata: {
-        "organization_name": content.organization.name,
+        "caster_handle": content.created_by.handle,
         "number_of_published_posts": num_posts,
         "post_title": content.title
       }
