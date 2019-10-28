@@ -16,12 +16,11 @@ module SlackService
 
   WEBHOOK_URLS = {
     socialmedia: 'https://hooks.slack.com/services/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',
-    newbloggers: 'https://hooks.slack.com/services/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',
     dev_private: 'https://hooks.slack.com/services/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'
   }.freeze
 
   def send_published_content_notification(content)
-    text = "<@jsensenich> #{content.organization.name} has published a post!"
+    text = "<@jsensenich> #{content.caster.handle} has published a post!"
     notifier = Slack::Notifier.new(WEBHOOK_URLS[:socialmedia])
     opts = {
       text: text,
@@ -31,47 +30,6 @@ module SlackService
         color: '3CB371'
       }]
     }.merge(BOTS[:piggy])
-    notifier.post(opts)
-  end
-
-  def send_new_blogger_alert(user:, organization:)
-    text = "#{user.name} just created the blog #{organization.name}."
-    notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
-    opts = {
-      text: 'New blogger on HereCast!',
-      attachments: [{
-        title: text,
-        text: organization.profile_link,
-        color: '000099'
-      }]
-    }.merge(BOTS[:chaco])
-    notifier.post(opts)
-  end
-
-  def send_new_blogger_email_capture(email)
-    text = "Mobile blogger interest from #{email}"
-    notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
-    opts = {
-      text: 'New blogger interest on mobile',
-      attachments: [{
-        title: text,
-        color: '009900'
-      }]
-    }.merge(BOTS[:chaco])
-    notifier.post(opts)
-  end
-
-  def send_new_blogger_error_alert(error:, user:, organization:)
-    text = "There appears to be a problem signing #{user.email} up in Mailchimp "
-    notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
-    opts = {
-      text: 'Problem with #{organization.name}',
-      attachments: [{
-        title: text,
-        text: error.inspect,
-        color: 'ff0000'
-      }]
-    }.merge(BOTS[:chaco])
     notifier.post(opts)
   end
 
