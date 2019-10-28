@@ -60,14 +60,14 @@ module Api
       end
 
       def organization_subscriptions
-        object.organization_subscriptions.active.map do |org_subscription|
-          OrganizationSubscriptionSerializer.new(org_subscription, root: false)
+        object.caster_follows.active.map do |caster_follow|
+          CasterFollowSerializer.new(caster_follow, root: false)
         end
       end
 
       def organization_hides
-        object.organization_hides.active.map do |organization_hide|
-          OrganizationHideSerializer.new(organization_hide, root: false)
+        object.caster_hides.active.map do |caster_hide|
+          CasterHideSerializer.new(caster_hide, root: false)
         end
       end
     end

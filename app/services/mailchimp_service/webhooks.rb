@@ -26,8 +26,8 @@ module MailchimpService
     end
 
     def unsubscribe_user_from_orgs(user)
-      user.organization_subscriptions.each do |org_subscription|
-        org_subscription.update_attribute(:deleted_at, Time.current)
+      user.caster_follows.each do |caster_follow|
+        caster_follow.update_attribute(:deleted_at, Time.current)
       end
     end
 

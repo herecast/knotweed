@@ -53,6 +53,11 @@
 #  publisher_agreement_version      :string
 #  handle                           :string
 #  mc_followers_segment_id          :string
+#  email_is_public                  :boolean          default(FALSE)
+#  background_image                 :string
+#  description                      :string
+#  website                          :string
+#  phone                            :string
 #
 # Indexes
 #
@@ -386,13 +391,14 @@ describe User, type: :model do
 
       context 'when the user does not have an existing account' do
         let!(:location) { FactoryGirl.create :location }
+        let(:reg_attributes) { { location: location, handle: 'handle' } }
 
         it 'creates a new user account' do
-          expect { User.from_facebook_oauth(facebook_response, location: location) }.to change { User.count }.by(1)
+          expect { User.from_facebook_oauth(facebook_response, reg_attributes) }.to change { User.count }.by(1)
         end
 
         it 'sets the correct info for the new user' do
-          user = User.from_facebook_oauth(facebook_response, location: location)
+          user = User.from_facebook_oauth(facebook_response, reg_attributes)
           expect(user.name).to eq facebook_response[:name]
           expect(user.email).to eq facebook_response[:email]
           expect(user.nda_agreed_at).to_not be_nil
@@ -401,7 +407,7 @@ describe User, type: :model do
         end
 
         it 'confirms the new users account' do
-          user = User.from_facebook_oauth(facebook_response, location: location)
+          user = User.from_facebook_oauth(facebook_response, reg_attributes)
           expect(user.confirmed?).to eq true
         end
       end

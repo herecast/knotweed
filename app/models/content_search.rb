@@ -9,8 +9,12 @@ class ContentSearch
     new(*args).comment_query
   end
 
-  def self.my_stuff_query(*args)
-    new(*args).my_stuff_query
+  def self.caster_follows_query(*args)
+    new(*args).caster_follows_query
+  end
+
+  def self.caster_query(*args)
+    new(*args).caster_query
   end
 
   def self.calendar_query(*args)
@@ -26,21 +30,38 @@ class ContentSearch
     update_content_types_in_params
     standard_opts.tap do |attrs|
       add_boilerplate_opts(attrs)
-      whitelist_organizations_and_content_types(attrs)
+      whitelist_content_type(attrs)
       conditionally_add_location_opts(attrs)
-      conditionally_update_attributes_for_organization_query(attrs)
       conditionally_update_boost_for_query(attrs)
       conditionally_guard_from_future_latest_activity(attrs)
     end
   end
 
-  def my_stuff_query
+  def caster_query
     standard_query.tap do |attrs|
       if @params[:bookmarked] == 'true'
-        attrs[:where][:id] = { in: UserBookmark.where(user_id: @params[:id]).pluck(:content_id) }
+        attrs[:where][:id] = { in: CasterBookmark.where(user_id: @params[:id]).pluck(:content_id) }
       else
         attrs[:where][:created_by_id] = @params[:id]
       end
+      conditionally_update_for_drafts(attrs)
+    end
+  end
+
+  def conditionally_update_for_drafts(attrs)
+    if [true, 'true'].include?(@params[:drafts])
+      attrs[:where].delete(:pubdate)
+      attrs[:where][:or] << [
+        { pubdate: nil },
+        { pubdate: { gt: Time.current } }
+      ]
+    end
+  end
+
+  def caster_follows_query
+    standard_query.tap do |attrs|
+      following_ids = @current_user.caster_follows.map(&:caster_id).flatten
+      attrs[:where][:created_by_id] = following_ids
     end
   end
 
@@ -49,6 +70,7 @@ class ContentSearch
       attrs[:where].delete(:pubdate)
       attrs[:where][:content_type] = 'comment'
       attrs[:where][:created_by_id] = @params[:id]
+      attrs[:where][:deleted] = false
     end
   end
 
@@ -68,15 +90,7 @@ class ContentSearch
       order: {
         starts_at: :asc
       }
-    }.tap do |attrs|
-      if @params[:organization_id].present?
-        organization = Organization.find(@params[:organization_id])
-        attrs[:where][:or] = [[
-          { organization_id: @params[:organization_id] },
-          { id: organization.tagged_contents.pluck(:id) }
-        ]]
-      end
-    end
+    }
   end
 
   private
@@ -105,8 +119,8 @@ class ContentSearch
       }
     }.tap do |attrs|
       if @current_user
-        attrs[:where][:organization_id] = {
-          not: @current_user.blocked_organzation_ids
+        attrs[:where][:created_by_id] = {
+          not: @current_user.blocked_caster_ids
         }
       end
     end
@@ -119,7 +133,6 @@ class ContentSearch
   def category_options
     content_types = %w[news talk]
     content_types += %w[market] if should_include_market_posts?
-    content_types += %w[campaign] if @params[:organization_id].present?
     if @params[:calendar] == 'false'
       [{ content_type: content_types }]
     else
@@ -129,19 +142,18 @@ class ContentSearch
 
   def should_include_market_posts?
     @params[:content_type].present? || \
-      @params[:organization_id].present? || \
       @params[:query].present? || \
-      @params[:my_stuff] == true
+      @params[:caster] == true
   end
 
-  def whitelist_organizations_and_content_types(attrs)
+  def whitelist_content_type(attrs)
     if @params[:content_type].present?
       attrs[:where][:content_type] = @params[:content_type]
     end
   end
 
   def conditionally_add_location_opts(attrs)
-    if location.present? && @params[:organization_id].blank?
+    if location.present?
       attrs[:where][:location_id] = { in: location.send(radius_method) }
     end
   end
@@ -159,52 +171,10 @@ class ContentSearch
     end
   end
 
-  def conditionally_update_attributes_for_organization_query(attrs)
-    if @params[:organization_id].present?
-      attrs[:where][:biz_feed_public] = [true, nil]
-      organization = if @params[:organization_id] == 'false'
-                       Organization.find_by(standard_ugc_org: true)
-                     else
-                       Organization.find(@params[:organization_id])
-                     end
-
-      or_opts = [{ organization_id: organization.id }]
-      if @params[:calendar] == 'false'
-        or_opts << { id: organization.tagged_contents.where.not(channel_type: 'Event').pluck(:id) }
-      else
-        or_opts << { id: organization.tagged_contents.pluck(:id) }
-      end
-      attrs[:where][:or] << or_opts
-
-      attrs[:where][:or] << [
-        { sunset_date: nil },
-        { sunset_date: { gt: Date.current } }
-      ]
-
-      organization_show_options[@params['show']].call(attrs) if @params['show'].present?
-
-      attrs[:order] = { organization_order_moment: :desc }
-    end
-  end
-
   def conditionally_guard_from_future_latest_activity(attrs)
-    unless @params[:organization_id].present? || @params[:id].present?
+    unless @params[:id].present?
       attrs[:where][:latest_activity] = { lt: Time.current + 10.minutes }
     end
-  end
-
-  def organization_show_options
-    {
-      'everything' => ->(attrs) { %i[pubdate biz_feed_public].each { |k| attrs[:where].delete(k) } },
-      'hidden' => ->(attrs) { attrs[:where][:biz_feed_public] = false },
-      'draft' => lambda do |attrs|
-        attrs[:where].delete(:pubdate)
-        attrs[:where][:or] << [
-          { pubdate: nil },
-          { pubdate: { gt: Time.current } }
-        ]
-      end
-    }
   end
 
   def page

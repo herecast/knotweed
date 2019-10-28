@@ -4,12 +4,10 @@ module Api
   module V3
     class ContentSerializer < ActiveModel::Serializer
       attributes :id,
-                 :author_id,
-                 :author_name,
-                 :avatar_url,
                  :biz_feed_public,
                  :campaign_end,
                  :campaign_start,
+                 :caster,
                  :click_count,
                  :comment_count,
                  :commenter_count,
@@ -58,6 +56,29 @@ module Api
                  :venue_url,
                  :venue_zip,
                  :view_count
+
+      def caster
+        if caster_object
+          {
+            id: caster_object.id,
+            name: caster_object.name || caster_object.organization&.name,
+            handle: caster_object.handle,
+            description: caster_object.description || caster_object.organization&.description,
+            avatar_image_url: caster_object.avatar_url || caster_object.organization&.profile_image_url,
+            active_followers_count: caster_object.active_follower_count,
+            location: {
+              id: caster_object.location.id,
+              city: caster_object.location.city,
+              state: caster_object.location.state,
+              latitude: caster_object.location.latitude,
+              longitude: caster_object.location.longitude,
+              image_url: caster_object.location.image_url
+            }
+          }
+        else
+          {}
+        end
+      end
 
       def event_instance_id
         if object.channel_type == 'Event'
@@ -327,6 +348,10 @@ module Api
       end
 
       private
+
+      def caster_object
+        @caster_object ||= Caster.find_by(id: object.created_by_id)
+      end
 
       def isEvent
         (object.channel_type == 'Event') || (

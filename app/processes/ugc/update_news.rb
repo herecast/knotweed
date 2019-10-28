@@ -34,14 +34,6 @@ module Ugc
 
         raise ValidationError, "Can't unpublish already published news content"
       end
-
-      # don't allow publishing or scheduling without an organization
-      if news_params[:organization_id].blank? &&
-         @content.organization.blank? &&
-         news_params[:pubdate].present?
-
-        raise ValidationError, 'Organization must be specified for news content'
-      end
     end
 
     def news_params

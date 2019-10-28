@@ -109,7 +109,7 @@ describe SessionsController, type: :controller do
       end
 
       subject do
-        post :oauth, params: { accessToken: 'myFak3t0k3n', location_id: location.slug }
+        post :oauth, params: { accessToken: 'myFak3t0k3n', location_id: location.slug, handle: 'handle' }
       end
 
       it 'creates a new user ' do
@@ -137,7 +137,7 @@ describe SessionsController, type: :controller do
 
         it 'returns the an error with the missing fields' do
           subject
-          expect(JSON.parse(response.body)).to eq({ error: 'There was a problem signing in', missing_fields: 'email,handle' }.stringify_keys)
+          expect(JSON.parse(response.body)).to eq({ error: 'There was a problem signing in', missing_fields: 'email' }.stringify_keys)
         end
       end
     end

@@ -56,9 +56,6 @@ describe 'Feed endpoints', type: :request do
 
         expect(subject).to include(
           id: content.id,
-          author_id: content.created_by.id,
-          author_name: content.author_name,
-          avatar_url: content.created_by.avatar_url,
           biz_feed_public: content.biz_feed_public,
           campaign_end: content.ad_campaign_end,
           campaign_start: content.ad_campaign_start,
@@ -70,12 +67,12 @@ describe 'Feed endpoints', type: :request do
                         id: comment.channel.try(:id) || comment.id,
                         content: comment.sanitized_content,
                         content_id: comment.id,
-                        parent_content_id: comment.parent_id,
+                        parent_id: comment.parent_id,
                         published_at: comment.pubdate.iso8601,
-                        title: comment.sanitized_title,
-                        user_id: comment.created_by.try(:id),
-                        user_image_url: comment.created_by.try(:avatar).try(:url),
-                        user_name: comment.created_by.try(:name)
+                        caster_id: comment.created_by.try(:id),
+                        caster_handle: comment.created_by.try(:handle),
+                        caster_name: comment.created_by.try(:name),
+                        caster_avatar_image_url: comment.created_by.try(:avatar).try(:url)
                       }
                     end,
           contact_email: an_instance_of(String).or(be_nil),
@@ -170,14 +167,14 @@ describe 'Feed endpoints', type: :request do
             comments: comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
               {
                 id: comment.channel.try(:id) || comment.id,
-                content_id: comment.id,
-                title: comment.sanitized_title,
                 content: comment.sanitized_content,
-                parent_content_id: comment.parent_id,
+                content_id: comment.id,
+                parent_id: comment.parent_id,
                 published_at: comment.pubdate.iso8601,
-                user_id: comment.created_by.id,
-                user_name: comment.created_by.name,
-                user_image_url: comment.created_by.avatar.url
+                caster_id: comment.created_by.try(:id),
+                caster_handle: comment.created_by.try(:handle),
+                caster_name: comment.created_by.try(:name),
+                caster_avatar_image_url: comment.created_by.try(:avatar).try(:url)
               }
             end
           )
@@ -350,13 +347,13 @@ describe 'Feed endpoints', type: :request do
 
     context 'when user has blocked orgs' do
       before do
-        organization = FactoryGirl.create :organization
-        @content = FactoryGirl.create :content, :news,
-                                      organization_id: organization.id,
+        caster = FactoryGirl.create :caster
+        @blocked_content = FactoryGirl.create :content, :news,
+                                      created_by_id: caster.id,
                                       location_id: user.location_id
         FactoryGirl.create :organization_hide,
-                           organization_id: organization.id,
-                           user_id: user.id
+                           user_id: user.id,
+                           caster_id: caster.id
       end
 
       subject { get '/api/v3/feed', params: {}, headers: headers.merge(auth_headers) }
@@ -364,7 +361,7 @@ describe 'Feed endpoints', type: :request do
       it 'does not return blocked Org content' do
         subject
         returned_ids = response_json[:feed_items].map { |i| i[:content][:id] }
-        expect(returned_ids).not_to include @content.id
+        expect(returned_ids).not_to include @blocked_content.id
       end
     end
 
@@ -401,18 +398,6 @@ describe 'Feed endpoints', type: :request do
         expect(contents.length).to eq 2
       end
 
-      it 'returns one Organization collection' do
-        subject
-        collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-        expect(collections.length).to eq 1
-      end
-
-      it 'does not return archived orgs' do
-        subject
-        carousel = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }[0]
-        expect(carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_publisher.id
-      end
-
       context 'when one carousel returns no Organizations' do
         before do
           @second_organization.update_attribute(:name, 'non-search')
@@ -442,355 +427,6 @@ describe 'Feed endpoints', type: :request do
 
             expect(content_types).to all eql content_type.to_s
           end
-        end
-      end
-    end
-  end
-
-  describe 'organization_id param present', elasticsearch: true do
-    before do
-      @organization = FactoryGirl.create :organization
-      @other_organization = FactoryGirl.create :organization
-    end
-
-    subject do
-      Timecop.travel(Time.current + 1.day)
-      get "/api/v3/feed?organization_id=#{@organization.id}"
-      Timecop.return
-    end
-
-    context 'when Organization has tagged Content' do
-      before do
-        @tagged_content = FactoryGirl.create :content, :market_post
-        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
-        @organization.tagged_contents << @tagged_content
-      end
-
-      it 'returns tagged Content' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @tagged_content.id
-      end
-    end
-
-    context 'when Organization content is outside of location range' do
-      before do
-        distant_location = FactoryGirl.create :location
-        @close_location = FactoryGirl.create :location,
-                                             location_ids_within_fifty_miles: []
-        @distant_org_item = FactoryGirl.create :content, :market_post,
-                                               organization_id: @organization.id,
-                                               location_id: distant_location.id
-      end
-
-      subject { get "/api/v3/feed?organization_id=#{@organization.id}&location_id=#{@close_location.id}" }
-
-      it 'returns content' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @distant_org_item.id
-      end
-    end
-
-    context 'when Organization owns Market Posts' do
-      before do
-        @market_post = FactoryGirl.create :content, :market_post, organization_id: @organization.id
-        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
-      end
-
-      it 'returns the Market Posts' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @market_post.id
-      end
-    end
-
-    context 'when Organization owns Events' do
-      before do
-        @event = FactoryGirl.create :content, :event, organization_id: @organization.id
-        FactoryGirl.create :content, :event, organization_id: @other_organization.id
-      end
-
-      it 'returns the Events' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @event.id
-      end
-    end
-
-    context 'when Organization owns Content in talk category' do
-      before do
-        @talk = FactoryGirl.create :content, :talk, organization_id: @organization.id
-        FactoryGirl.create :content, :talk, organization_id: @other_organization.id
-      end
-
-      it 'returns talk items' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @talk.id
-      end
-    end
-
-    context 'when Organization owns Content in news category' do
-      before do
-        @news = FactoryGirl.create :content, :news, organization_id: @organization.id
-        FactoryGirl.create :content, :news, organization_id: @other_organization.id
-      end
-
-      it 'returns news items' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @news.id
-      end
-    end
-
-    context 'when Content is created but has no pubdate' do
-      before do
-        content = FactoryGirl.create :content, :news,
-                                     organization_id: @organization.id
-        content.update_attribute(:pubdate, nil)
-      end
-
-      it 'does not return nil pubdate items' do
-        subject
-        expect(response_json[:feed_items].length).to eq 0
-      end
-    end
-
-    context 'when Content is scheduled for future release' do
-      before do
-        content = FactoryGirl.create :content, :news,
-                                     organization_id: @organization.id,
-                                     pubdate: Date.current + 5.days
-      end
-
-      it 'it does not return future pubdate items' do
-        subject
-        expect(response_json[:feed_items].length).to eq 0
-      end
-    end
-
-    context 'when Campaign present and biz_feed_public: true' do
-      before do
-        @campaign_content = FactoryGirl.create :content, :campaign,
-                                               organization_id: @organization.id
-        @campaign_content.update_attribute :biz_feed_public, true
-      end
-
-      it 'appears' do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-      end
-    end
-
-    context 'when Organization is type: Business and biz feed inactive' do
-      before do
-        @inactive_organization = FactoryGirl.create :organization,
-                                                    org_type: 'Business',
-                                                    biz_feed_active: false
-        FactoryGirl.create :content, :news,
-                           organization_id: @inactive_organization.id,
-                           biz_feed_public: true
-      end
-
-      subject do
-        Timecop.travel(Time.current + 1.day)
-        get "/api/v3/feed?organization_id=#{@inactive_organization.id}"
-        Timecop.return
-      end
-
-      it 'it returns empty payload' do
-        subject
-        expect(response_json[:feed_items].length).to eq 0
-      end
-    end
-
-    context 'when content_type is calendar' do
-      before do
-        @news = FactoryGirl.create :content, :news,
-                                   organization_id: @organization.id,
-                                   biz_feed_public: true
-        @first_event = FactoryGirl.create :content, :event,
-                                          organization_id: @organization.id,
-                                          biz_feed_public: true
-        @second_event = FactoryGirl.create :content, :event,
-                                           organization_id: @organization.id,
-                                           biz_feed_public: true
-        @second_event.channel.event_instances[0].update_attribute(
-          :start_date, 1.month.from_now
-        )
-      end
-
-      subject { get "/api/v3/feed?organization_id=#{@organization.id}&content_type=calendar" }
-
-      it 'returns only events, in chronological order' do
-        subject
-        expect(response_json[:feed_items].length).to eq 2
-        expect(response_json[:feed_items][0][:content][:id]).to eq @first_event.id
-      end
-
-      context 'when Event is tagged to organization' do
-        before do
-          alt_org = FactoryGirl.create :organization
-          @tagged_event = FactoryGirl.create :content, :event,
-                                             organization_id: alt_org.id,
-                                             biz_feed_public: true
-          @organization.tagged_contents << @tagged_event
-        end
-
-        it 'returns tagged event as well' do
-          subject
-          ids = response_json[:feed_items].map { |i| i[:content][:id] }
-          expect(ids).to include @tagged_event.id
-        end
-      end
-    end
-
-    describe 'additional params' do
-      before do
-        @organization = FactoryGirl.create :organization
-        @hidden_content = FactoryGirl.create :content, :news,
-                                             biz_feed_public: false,
-                                             organization_id: @organization.id,
-                                             location_id: user.location_id
-        @draft_content = FactoryGirl.create :content, :news,
-                                            organization_id: @organization.id,
-                                            location_id: user.location_id
-        @draft_content.update_attribute(:pubdate, nil)
-        @regular_content = FactoryGirl.create :content, :news,
-                                              biz_feed_public: true,
-                                              organization_id: @organization.id,
-                                              location_id: user.location_id
-        @scheduled_content = FactoryGirl.create :content, :news,
-                                                organization_id: @organization.id,
-                                                pubdate: 3.days.from_now,
-                                                location_id: user.location_id
-        @event = FactoryGirl.create :content, :event,
-                                    organization_id: @organization.id,
-                                    biz_feed_public: true,
-                                    location_id: user.location_id
-        Timecop.travel(Time.current + 1.day)
-      end
-
-      after do
-        Timecop.return
-      end
-
-      describe '?show=everything' do
-        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=everything" }
-
-        it 'returns drafts, hidden content and regular content' do
-          subject
-          expect(response_json[:feed_items].length).to eq 5
-        end
-
-        context 'when Campaign present and biz_feed_public: false' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id,
-                                                   biz_feed_public: false
-          end
-
-          it 'appears' do
-            subject
-            expect(response_json[:feed_items].length).to eq 6
-          end
-        end
-
-        context 'when Campaign present and biz_feed_public: true' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id,
-                                                   biz_feed_public: true
-          end
-
-          it 'appears' do
-            subject
-            expect(response_json[:feed_items].length).to eq 6
-          end
-        end
-      end
-
-      describe '?show=hidden' do
-        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=hidden" }
-
-        it 'returns biz_feed_public: false contents' do
-          subject
-          expect(response_json[:feed_items].length).to eq 1
-          expect(response_json[:feed_items][0][:content][:id]).to eq @hidden_content.id
-        end
-
-        context 'when Campaign present and biz_feed_public: false' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id,
-                                                   biz_feed_public: false
-          end
-
-          it 'appears' do
-            subject
-            expect(response_json[:feed_items].length).to eq 2
-          end
-        end
-
-        context 'when Campaign present and biz_feed_public: true' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id
-            @campaign_content.update_attribute :biz_feed_public, true
-          end
-
-          it 'does not appear' do
-            subject
-            expect(response_json[:feed_items].length).to eq 1
-          end
-        end
-      end
-
-      describe '?show=drafts' do
-        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=draft" }
-
-        it 'returns drafts and scheduled posts only' do
-          subject
-          expect(response_json[:feed_items].length).to eq 2
-          content_ids = response_json[:feed_items].map { |c| c[:content][:id] }
-          expect(content_ids).to match_array [@draft_content.id, @scheduled_content.id]
-        end
-
-        context 'when Campaign present and biz_feed_public: false' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id,
-                                                   biz_feed_public: false
-          end
-
-          it 'does not appear' do
-            subject
-            expect(response_json[:feed_items].length).to eq 2
-          end
-        end
-
-        context 'when Campaign present and biz_feed_public: true' do
-          before do
-            @campaign_content = FactoryGirl.create :content, :campaign,
-                                                   organization_id: @organization.id
-            @campaign_content.update_attribute :biz_feed_public, true
-          end
-
-          it 'does not appear' do
-            subject
-            expect(response_json[:feed_items].length).to eq 2
-          end
-        end
-      end
-
-      describe '?calendar=false' do
-        subject { get "/api/v3/feed?organization_id=#{@organization.id}&calendar=false" }
-
-        it 'returns all but events' do
-          subject
-          expect(response_json[:feed_items].length).to eq 1
-          expect(response_json[:feed_items][0][:content][:id]).not_to eq @event.id
         end
       end
     end

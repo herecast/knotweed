@@ -46,10 +46,10 @@ namespace :indexing do
     puts 'Operation completed'
   end
 
-  task full_reindex_organization: :environment do
-    index_name = Organization.reindex(async: { wait: true }, refresh_interval: '30s')
+  task full_reindex_caster: :environment do
+    index_name = Caster.reindex(async: { wait: true }, refresh_interval: '30s')
     puts 'Reindexing last hour'
-    Organization.where('updated_at > ?', 2.hours.ago).each{ |i| i.reindex(mode: :async) }
+    Caster.where('updated_at > ?', 2.hours.ago).each{ |i| i.reindex(mode: :async) }
     puts 'Operation completed'
   end
 
@@ -58,8 +58,8 @@ namespace :indexing do
       full_reindex_content
       full_reindex_event_instances
       full_reindex_business_location
-      full_reindex_organization
       full_reindex_location
+      full_reindex_caster
     ].each do |task|
       Rake::Task["indexing:#{task}"].invoke
     end
@@ -70,8 +70,8 @@ namespace :indexing do
       Content,
       EventInstance,
       BusinessLocation,
-      Organization,
-      Location
+      Location,
+      Caster
     ].each do |model|
       puts "Reindexing for: #{model.to_s}"
       model.find_each { |i| i.reindex }
@@ -83,8 +83,8 @@ namespace :indexing do
       Content,
       EventInstance,
       BusinessLocation,
-      Organization,
-      Location
+      Location,
+      Caster
     ].each do |model|
       model.reindex
     end

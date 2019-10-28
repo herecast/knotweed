@@ -53,6 +53,11 @@
 #  publisher_agreement_version      :string
 #  handle                           :string
 #  mc_followers_segment_id          :string
+#  email_is_public                  :boolean          default(FALSE)
+#  background_image                 :string
+#  description                      :string
+#  website                          :string
+#  phone                            :string
 #
 # Indexes
 #

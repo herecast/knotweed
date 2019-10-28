@@ -107,7 +107,7 @@ describe Api::V3::CommentsController, type: :controller do
       FactoryGirl.create :organization, :default
     end
 
-    subject { post :create, params: { comment: { content: 'fake', parent_content_id: @event.content.id } } }
+    subject { post :create, params: { comment: { content: 'fake', parent_id: @event.content.id } } }
 
     context 'should not allow creation if user unauthorized' do
       before { api_authenticate success: false }
@@ -116,13 +116,6 @@ describe Api::V3::CommentsController, type: :controller do
         expect(response.code).to eq('401')
         expect(Comment.count).to eq(0)
       end
-    end
-
-    it 'should automatically set organization to HereCast' do
-      subject
-      expect(response.code).to eq('201')
-      expect(assigns(:comment).content.parent).to eq(@event.content)
-      expect(assigns(:comment).organization.name).to eq('From HereCast')
     end
 
     it 'sets the origin to UGC' do
@@ -167,11 +160,12 @@ describe Api::V3::CommentsController, type: :controller do
     r = {}
     r[:id] = comment.channel.id
     r[:content] = comment.sanitized_content
-    r[:user_id] = comment.created_by.id
-    r[:user_name] = comment.created_by.name
-    r[:user_image_url] = comment.created_by.try(:avatar).try(:url)
+    r[:caster_id] = comment.created_by.id
+    r[:caster_name] = comment.created_by.name
+    r[:caster_handle] = comment.created_by.handle
+    r[:caster_avatar_image_url] = comment.created_by.try(:avatar).try(:url)
     r[:published_at] = comment.pubdate.iso8601
-    r[:parent_content_id] = comment.parent_id
+    r[:parent_id] = comment.parent_id
     r[:content_id] = comment.content.id
     r.stringify_keys
   end

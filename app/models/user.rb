@@ -53,6 +53,11 @@
 #  publisher_agreement_version      :string
 #  handle                           :string
 #  mc_followers_segment_id          :string
+#  email_is_public                  :boolean          default(FALSE)
+#  background_image                 :string
+#  description                      :string
+#  website                          :string
+#  phone                            :string
 #
 # Indexes
 #
@@ -68,15 +73,18 @@ class User < ActiveRecord::Base
   has_many :user_bookmarks
   has_many :contents, foreign_key: 'created_by_id'
   has_many :payments, foreign_key: 'paid_to_id'
-  has_many :organization_subscriptions
-  has_many :organization_hides
 
   has_many :caster_followers, class_name: 'OrganizationSubscription', foreign_key: 'caster_id'
+  has_many :caster_follows, class_name: 'OrganizationSubscription', foreign_key: 'user_id'
+
+  has_many :caster_hides, class_name: 'OrganizationHide', foreign_key: 'user_id'
+  has_many :caster_hiders, class_name: 'OrganizationHide', foreign_key: 'caster_id'
 
   has_one :organization
 
   belongs_to :location
   mount_uploader :avatar, ImageUploader
+  mount_uploader :background_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,
                 :remove_avatar!, raise: false
 
@@ -221,7 +229,7 @@ class User < ActiveRecord::Base
         name: auth[:name],
         nda_agreed_at: Time.zone.now,
         agreed_to_nda: true,
-        handle: auth[:email]&.split('@')&.[](0)
+        handle: registration_attributes[:handle]
       }.merge(registration_attributes))
 
       if user.valid?
@@ -249,12 +257,42 @@ class User < ActiveRecord::Base
     "New User ID: #{id}"
   end
 
-  def blocked_organzation_ids
-    organization_hides.active.pluck(:organization_id)
+  def blocked_caster_ids
+    caster_hides.active.pluck(:caster_id)
   end
 
   def can_manage_organization?(id)
     roles.where(name: 'manager', resource_type: 'Organization', resource_id: id).present?
+  end
+
+  def active_follower_count
+    caster_followers.active.count
+  end
+
+  def counted_posts
+    contents
+      .not_removed
+      .where('pubdate IS NOT NULL and pubdate < ?', Time.current)
+      .where("channel_type != 'Comment' OR channel_type IS NULL")
+      .where('content_category != ?', 'campaign')
+      .where('biz_feed_public = true OR biz_feed_public IS NULL')
+  end
+
+  def total_view_count
+    counted_posts.sum(:view_count).to_i
+  end
+
+  def post_count
+    counted_posts.count
+  end
+
+  def caster_bookmarks
+    user_bookmarks
+  end
+
+  def total_like_count
+    content_ids = contents.pluck(:id)
+    UserBookmark.where(content_id: content_ids).count
   end
 
   def active_follower_count

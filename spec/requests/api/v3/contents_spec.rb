@@ -5,9 +5,6 @@ require 'spec_helper'
 def content_response_schema(record)
   {
     content: {
-      author_id: record.created_by.id,
-      author_name: record.created_by.name,
-      avatar_url: record.created_by.avatar_url,
       biz_feed_public: record.biz_feed_public,
       campaign_end: record.try(:promotions).try(:first).try(:promotable).try(:campaign_end),
       campaign_start: record.try(:promotions).try(:first).try(:promotable).try(:campaign_start),
@@ -185,55 +182,10 @@ describe 'Contents Endpoints', type: :request do
                   content: {
                     title: valid_news_params[:title],
                     content: valid_news_params[:content],
-                    author_name: 'Fred',
                     organization_id: valid_news_params[:organization_id]
                   }
                 )
               )
-            end
-
-            describe 'author_name' do
-              let(:author_name) { '' }
-              before do
-                valid_news_params[:author_name] = author_name
-                subject
-              end
-
-              context 'when it\'s the same as the user\'s name' do
-                let(:author_name) { user.name }
-
-                it 'should persist authors as blank' do
-                  expect(Content.last.authors).to be_blank
-                end
-
-                it 'should set authors_is_created_by to true' do
-                  expect(Content.last.authors_is_created_by).to be true
-                end
-              end
-
-              context 'when author_name is something different' do
-                let(:author_name) { Faker::Name.name }
-
-                it 'should persist the author_name as authors' do
-                  expect(Content.last.authors).to eq author_name
-                end
-
-                it 'should leave authors_is_created_by false' do
-                  expect(Content.last.authors_is_created_by).to be false
-                end
-              end
-
-              context 'when author_name is blank' do
-                let(:author_name) { '' }
-
-                it 'should persist the blank author name' do
-                  expect(Content.last.authors).to be_blank
-                end
-
-                it 'should leave authors_is_created_by false' do
-                  expect(Content.last.authors_is_created_by).to be false
-                end
-              end
             end
 
             describe 'saving a draft' do
@@ -506,8 +458,7 @@ describe 'Contents Endpoints', type: :request do
               {
                 title: 'A distinguished article, revised',
                 biz_feed_public: false,
-                content: '<p>Once upon a time...</p>',
-                author_name: 'Fred'
+                content: '<p>Once upon a time...</p>'
               }
             end
 
@@ -525,7 +476,6 @@ describe 'Contents Endpoints', type: :request do
               expect(response.body).to include_json(
                 content_response_schema(content.reload).deep_merge(
                   content: {
-                    author_name: valid_news_params[:author_name],
                     biz_feed_public: false,
                     title: valid_news_params[:title],
                     content: valid_news_params[:content],
@@ -533,37 +483,6 @@ describe 'Contents Endpoints', type: :request do
                   }
                 )
               )
-            end
-
-            describe 'author_name' do
-              context 'when the user is not the original author' do
-                let(:other_user) { FactoryGirl.create :user, name: Faker::Name.name }
-                before { content.update_attribute :created_by, other_user }
-
-                context 'when passed the current user\'s name (*not* the author)' do
-                  before do
-                    valid_news_params[:author_name] = user.name
-                  end
-
-                  it 'should set `authors_is_created_by` to false' do
-                    subject
-                    expect(content.reload.authors_is_created_by).to be false
-                  end
-                end
-              end
-
-              context 'with authors_is_created_by true at first' do
-                before do
-                  content.authors = nil
-                  content.authors_is_created_by = true
-                  content.save
-                  valid_news_params[:author_name] = Faker::Name.name
-                end
-
-                it 'should set `authors_is_created_by` to false' do
-                  expect { subject }.to change { content.reload.authors_is_created_by }.to false
-                end
-              end
             end
 
             describe 'scheduling a draft for publishing' do
@@ -611,46 +530,6 @@ describe 'Contents Endpoints', type: :request do
 
               it 'should update the content' do
                 expect { subject }.to change { content.reload.title }
-              end
-            end
-
-            context 'without an organization specified' do
-              before { content.update_attribute :organization_id, nil }
-
-              context 'with pubdate' do
-                before do
-                  valid_news_params.merge!(
-                    title: 'blerb',
-                    content: Faker::Lorem.paragraph,
-                    organization_id: nil,
-                    published_at: Time.current
-                  )
-                end
-
-                it 'should not update content' do
-                  expect { subject }.to_not change { content.reload.title }
-                end
-
-                it 'should respond with errors' do
-                  subject
-                  expect(response_json[:errors]).to be_present
-                end
-              end
-
-              context 'without pubdate' do
-                before do
-                  content.update! pubdate: nil
-                  valid_news_params.merge!(
-                    title: 'blerb',
-                    content: Faker::Lorem.paragraph,
-                    organization_id: nil,
-                    published_at: nil
-                  )
-                end
-
-                it 'should update the content' do
-                  expect { subject }.to change { content.reload.title }.to valid_news_params[:title]
-                end
               end
             end
           end

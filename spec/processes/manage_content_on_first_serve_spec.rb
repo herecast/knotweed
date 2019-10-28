@@ -13,10 +13,7 @@ RSpec.describe ManageContentOnFirstServe do
     context 'when first_served_at is nil' do
       before do
         @caster = FactoryGirl.create :caster
-        @organization = FactoryGirl.create :organization
-        @content = FactoryGirl.create :content,
-                                      organization_id: @organization.id,
-                                      created_by: @caster
+        @content = FactoryGirl.create :content, created_by: @caster
         allow(SlackService).to receive(
           :send_published_content_notification
         ).and_return(true)
@@ -35,14 +32,14 @@ RSpec.describe ManageContentOnFirstServe do
         )
       end
 
-      it "does narrow reindex on owning Organization" do
-        expect_any_instance_of(Organization).to receive(
-          :reindex
-        ).with(:post_count_data)
-        subject
-      end
-
       context 'when content has no mc_campaign_id' do
+        context 'when Caster has no subscribers' do
+          it 'does not call to schedule Mailchimp post' do
+            expect(BackgroundJob).not_to receive(:perform_later)
+            subject
+          end
+        end
+
         context 'when Caster has subscribers' do
           before do
             user = FactoryGirl.create :user
@@ -60,20 +57,13 @@ RSpec.describe ManageContentOnFirstServe do
             subject
           end
         end
-
-        context 'when content Organization has no subscribers' do
-          it 'does not call to schedule Mailchimp post' do
-            expect(BackgroundJob).not_to receive(:perform_later)
-            subject
-          end
-        end
       end
 
       context 'when content has mc_campaign_id' do
-        context 'when content Organization has subscribers' do
+        context 'when Caster has subscribers' do
           before do
             user = FactoryGirl.create :user
-            @organization.organization_subscriptions.create(
+            @caster.caster_followers.create(
               user_id: user.id
             )
             @content.update_attribute(:mc_campaign_id, '1234')
@@ -198,81 +188,6 @@ RSpec.describe ManageContentOnFirstServe do
         it 'does NOT ping Slack service about published News posts' do
           expect(SlackService).not_to receive(:send_published_content_notification)
           subject
-        end
-      end
-    end
-
-    context 'when Content Organization is a blog' do
-      before do
-        @campaign_id = 'nkjn23'
-        @organization = FactoryGirl.create :organization,
-                                           org_type: 'Blog',
-                                           reminder_campaign_id: @campaign_id
-        FactoryGirl.create :content,
-                           organization_id: @organization.id,
-                           pubdate: 1.day.ago
-        @first_real_content = FactoryGirl.create :content,
-                                                 first_served_at: nil,
-                                                 organization_id: @organization.id
-        allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_return true
-        allow(MailchimpService::UserOutreach).to receive(
-          :get_campaign_status
-        ).with(@campaign_id).and_return 'scheduled'
-        allow(MailchimpService::UserOutreach).to receive(
-          :delete_campaign
-        ).with(@campaign_id).and_return true
-      end
-
-      context 'when content is first for the Org' do
-        subject do
-          ManageContentOnFirstServe.call(
-            content_ids: [@first_real_content.id],
-            current_time: @current_time
-          )
-        end
-
-        it 'calls to create user hook campaign' do
-          expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
-            user: @first_real_content.created_by,
-            action: 'first_blogger_post'
-          )
-          subject
-        end
-
-        it 'deletes Org reminder campaign' do
-          expect(MailchimpService::UserOutreach).to receive(
-            :delete_campaign
-          ).with(@campaign_id)
-          expect { subject }.to change {
-            @organization.reload.reminder_campaign_id
-          }.to nil
-        end
-
-        context 'when Mailchimp call fails in Production' do
-          before do
-            @error = Mailchimp::Error.new
-            allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_raise(
-              @error
-            )
-            allow(SlackService).to receive(
-              :send_new_blogger_error_alert
-            ).and_return(true)
-            allow(Figaro.env).to receive(
-              :production_messaging_enabled
-            ).and_return('true')
-            allow(FacebookService).to receive(
-              :rescrape_url
-            ).and_return(true)
-          end
-
-          it 'sends Slack notification' do
-            expect(SlackService).to receive(:send_new_blogger_error_alert).with(
-              error: @error,
-              user: @first_real_content.created_by,
-              organization: @first_real_content.organization
-            )
-            subject
-          end
         end
       end
     end

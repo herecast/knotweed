@@ -375,14 +375,14 @@ ActiveRecord::Schema.define(version: 20191022172142) do
 
   create_table 'organization_hides', force: :cascade do |t|
     t.bigint   'user_id'
-    t.bigint   'organization_id'
     t.datetime 'deleted_at'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.string   'flag_type'
     t.bigint   'content_id'
+    t.integer  'caster_id'
+    t.index ['caster_id'], name: 'index_organization_hides_on_caster_id'
     t.index ['content_id'], name: 'index_organization_hides_on_content_id'
-    t.index ['organization_id'], name: 'index_organization_hides_on_organization_id'
     t.index ['user_id'], name: 'index_organization_hides_on_user_id'
   end
 
@@ -711,6 +711,11 @@ ActiveRecord::Schema.define(version: 20191022172142) do
     t.string   'publisher_agreement_version'
     t.string   'handle'
     t.string   'mc_followers_segment_id'
+    t.boolean  'email_is_public',                   default: false
+    t.string   'background_image'
+    t.string   'description'
+    t.string   'website'
+    t.string   'phone'
     t.index ['email'], name: 'idx_16858_index_users_on_email', unique: true, using: :btree
     t.index ['public_id'], name: 'idx_16858_index_users_on_public_id', unique: true, using: :btree
     t.index ['reset_password_token'], name: 'idx_16858_index_users_on_reset_password_token', unique: true, using: :btree

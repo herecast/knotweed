@@ -54,7 +54,6 @@ RSpec.describe FacebookService do
     it 'makes call for Facebook to rescrape url' do
       subject
       expect(successful_facebook_rescrape_request).to have_been_requested
-      expect(successful_facebook_profile_rescrape_request).to have_been_requested
     end
 
     context 'when content_type=Event' do
@@ -79,7 +78,6 @@ RSpec.describe FacebookService do
       it 'makes call to Facebook to scrape event instance URLs' do
         subject
         expect(successful_facebook_event_rescrape_request).to have_been_requested
-        expect(successful_facebook_profile_event_rescrape_request).to have_been_requested
       end
     end
   end

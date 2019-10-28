@@ -11,12 +11,10 @@ module Api
     module HashieMashes
       class ContentSerializer < HashieMashSerializer
         attributes :id,
-                   :author_id,
-                   :author_name,
-                   :avatar_url,
                    :biz_feed_public,
                    :campaign_end,
                    :campaign_start,
+                   :caster,
                    :click_count,
                    :comments,
                    :comment_count,

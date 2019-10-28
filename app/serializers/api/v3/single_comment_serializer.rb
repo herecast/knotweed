@@ -3,8 +3,12 @@
 module Api
   module V3
     class SingleCommentSerializer < ActiveModel::Serializer
-      attributes :id, :content, :parent_comment_id, :user_name,
-                 :event_instance_id, :pubdate
+      attributes :id,
+                 :content,
+                 :parent_comment_id,
+                 :user_name,
+                 :event_instance_id,
+                 :pubdate
 
       def id
         object.channel.id

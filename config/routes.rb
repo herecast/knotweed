@@ -86,20 +86,48 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v3, defaults: { format: 'json' } do
-      get '/current_user', to: 'users#show'
-      put '/current_user', to: 'users#update'
+      post '/users/logout',              to: 'users/sessions#destroy', as: :logout
+      get  '/user',                      to: 'users#index'
+      post '/users/email_confirmation',  to: 'users/confirmations#create', as: :email_confirmation
+      post '/users/resend_confirmation', to: 'users/confirmations#update', as: :resend_confirmation
+
+      get '/current_user',    to: 'current_users#show'
+      put '/current_user',    to: 'current_users#update'
+
+      namespace :current_users do
+        post '/password_validation', to: 'passwords#show'
+      end
+
+      get '/casters/follows', to: 'casters#index'
+      get '/casters',         to: 'casters#show'
+
+      namespace :casters do
+        resources :bookmarks, except: %i[show new edit], path: '/:caster_id/bookmarks'
+        resources :sitemap_ids, only: :index
+        post   '/:caster_id/follows', to: 'follows#create'
+        delete '/follows/:id',        to: 'follows#destroy'
+
+        post   '/:caster_id/hides',   to: 'hides#create'
+        delete '/hides/:id',          to: 'hides#destroy'
+
+        get  '/handles/validation',      to: 'handles#show'
+        get  '/emails/validation',       to: 'emails#show'
+
+        get '/:id/contents', to: 'contents#index'
+      end
+
+      get '/casters/:id', to: 'casters#show'
+     
       post '/contents/:content_id/moderate', to: 'contents/moderations#create'
 
       get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, defaults: { format: 'html' }
 
       namespace :users do
-        resources :bookmarks, except: %i[show new edit], path: '/:user_id/bookmarks'
         resources :payments, only: :index, path: '/:user_id/payments'
         resources :metrics, only: :index, path: '/:user_id/metrics'
-        resources :comments, only: :index, path: '/:id/comments'
-        resources :contents, only: :index, path: '/:id/contents'
         resources :publisher_agreements, only: :create, path: '/:user_id/publisher_agreements'
       end
+
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       post 'promotion_banners/:promotion_banner_id/track_load', to: 'promotion_banners#track_load', as: :track_load
 
@@ -136,32 +164,14 @@ Rails.application.routes.draw do
       namespace :contents do
         get '/:content_id/promotions', to: 'promotions#index'
         post '/:content_id/promotions', to: 'promotions#create'
-      end
-      namespace :organizations do
-        put    '/:organization_id/contents/:content_id',      to: 'contents#update'
-        post   '/:organization_id/contents/:content_id/tags', to: 'contents/tags#create'
-        delete '/:organization_id/contents/:content_id/tags', to: 'contents/tags#destroy'
-        get    '/:name/validation', to: 'validations#show'
-        get    '/subscriptions',    to: 'subscriptions#index'
-        post   '/:organization_id/subscriptions', to: 'subscriptions#create'
-        delete '/subscriptions/:id',              to: 'subscriptions#destroy'
-        post   '/:organization_id/hides', to: 'hides#create'
-        delete '/hides/:id',              to: 'hides#destroy'
-        post   '/email_captures',         to: 'email_captures#create'
-      end
-      get '/organizations/sitemap_ids', to: 'organizations/sitemap_ids#index'
+      end  
 
-      resources 'organizations', only: %i[index show update create] do
-        resources :metrics, only: [:index], controller: 'organizations/metrics'
-      end
+      get '/organizations/sitemap_ids', to: 'organizations/sitemap_ids#index'
 
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      post '/users/logout', to: 'users/sessions#destroy', as: :logout
-      get '/user', to: 'users#index'
-      post '/users/email_confirmation', to: 'users/confirmations#create', as: :email_confirmation
-      post '/users/resend_confirmation', to: 'users/confirmations#update', as: :resend_confirmation
+      
       resources 'images', only: %i[create update destroy]
 
       delete '/content_locations/:id', to: 'content_locations#destroy'

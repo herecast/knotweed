@@ -19,7 +19,7 @@ module SearchIndexing
                :has_future_event_instance,
                :organization_order_moment
 
-    has_many :comments, serializer: SearchIndexing::CommentSerializer
+    has_many :comments, serializer: Api::V3::CommentSerializer
 
     def comments
       object.abridged_comments

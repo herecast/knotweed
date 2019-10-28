@@ -70,10 +70,10 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
 
       context 'when subject line is too long' do
         before do
-          @name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation'
-          organization = FactoryGirl.create :organization, name: @name
+          @handle = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation'
+          caster = FactoryGirl.create :caster, handle: @handle
           @content = FactoryGirl.create :content,
-                                        organization_id: organization.id,
+                                        created_by_id: caster.id,
                                         location: FactoryGirl.create(:location)
           @max = Outreach::SendOrganizationPostNotification::MAX_SUBJECT_LENGTH
           @subj = Outreach::SendOrganizationPostNotification.new(

@@ -18,6 +18,7 @@ module Outreach
       mailchimp_caster_segment_delete_member
       @organization_subscription.update_attribute(:deleted_at, Time.current)
       @caster.organization&.reindex(:active_subscriber_count_data)
+      true
     end
 
     private

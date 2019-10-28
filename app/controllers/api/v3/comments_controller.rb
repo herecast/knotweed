@@ -22,13 +22,12 @@ module Api
       def create
         authorize! :create, Comment
         @comment = Comment.new(comment_params)
-        @comment.content.origin = Content::UGC_ORIGIN
         if @comment.save
-
           CommentAlert.call(@comment)
-
-          render json: @comment.content, serializer: SingleCommentSerializer,
-                 status: 201, root: 'comment'
+          render json: @comment.content,
+                 serializer: CommentSerializer,
+                 root: 'comment',
+                 status: 201
         else
           render json: {}, status: :unprocessable_entity
         end
@@ -41,15 +40,13 @@ module Api
         new_params[:comment] = new_params[:comment].merge(additional_attributes)
         new_params.require(:comment).permit(
           content_attributes: %i[
-            title
+            created_by_id
             parent_id
-            authoremail
-            authors
             raw_content
             pubdate
-            organization_id
             content_category
             location_id
+            origin
           ]
         )
       end
@@ -57,14 +54,13 @@ module Api
       def additional_attributes
         {
           content_attributes: {
-            title: params[:comment][:title],
-            parent_id: params[:comment][:parent_content_id],
-            authoremail: current_user.try(:email),
-            authors: current_user.try(:name),
+            created_by_id: current_user.id,
+            parent_id: params[:comment][:parent_id],
             raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
             pubdate: Time.zone.now,
-            organization_id: params[:comment][:organization_id] || Organization.find_by(standard_ugc_org: true).id,
-            content_category: 'talk_of_the_town'
+            content_category: 'talk_of_the_town',
+            location_id: current_user.location_id,
+            origin: Content::UGC_ORIGIN
           }
         }
       end

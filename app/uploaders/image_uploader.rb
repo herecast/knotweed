@@ -22,6 +22,8 @@ class ImageUploader < CarrierWave::Uploader::Base
       "#{Rails.root}/spec/support/uploads"
     elsif model.methods.include?(:imageable) && model.imageable.present?
       "#{model.imageable_type.underscore}/#{model.imageable.id}"
+    elsif model.class == Caster
+        "user/#{model.id}"
     elsif model.class != Image # i.e. if it's an organization
       "#{model.class.to_s.underscore}/#{model.id}"
     else

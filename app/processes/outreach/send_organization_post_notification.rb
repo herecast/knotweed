@@ -16,15 +16,14 @@ module Outreach
 
     def initialize(content)
       @content           = content
-      @organization      = content.organization
       @caster            = content.created_by
       @title             = content.title
-      @post_url          = "#{@organization.profile_link}/#{content.id}"
-      @profile_image_url = @organization.profile_image_url
+      @post_url          = "https://#{Figaro.env.default_consumer_host}/#{content.id}"
+      @profile_image_url = @caster.avatar_url
     end
 
     def call
-      raise_error_if_organization_has_no_active_subscribers
+      raise_error_if_caster_has_no_active_subscribers
       response = create_campaign
       schedule_campaign(response)
       @content.update_attribute(:mc_campaign_id, response['id'])
@@ -32,30 +31,26 @@ module Outreach
 
     private
 
-    def raise_error_if_organization_has_no_active_subscribers
+    def raise_error_if_caster_has_no_active_subscribers
       if @caster.active_follower_count == 0
         raise 'Caster has no subscribers'
       end
     end
 
     def campaign_subject
-      if @organization.feature_notification_org?
-        'New HereCast Features!'
-      else
-        "#{@content.location.pretty_name} | #{@organization.name}"
-      end
+      "#{@content.location.pretty_name} | #{@caster.handle}"
     end
 
     def create_campaign
       mailchimp_connection.campaigns.create('regular', {
-                                              list_id: mailchimp_config.master_list_id,
-                                              subject: formatted_subject(campaign_subject),
-                                              from_email: 'noreply@herecast.us',
-                                              from_name: 'HereCast'
-                                            }, {
-                                              html: ERB.new(File.read(html_path)).result(binding)
-                                            },
-                                            saved_segment_id: @caster.mc_followers_segment_id)
+        list_id: mailchimp_config.master_list_id,
+        subject: formatted_subject(campaign_subject),
+        from_email: 'noreply@herecast.us',
+        from_name: 'HereCast'
+      }, {
+        html: ERB.new(File.read(ERB_NEWS_TEMPLATE_PATH)).result(binding)
+      },
+      saved_segment_id: @caster.mc_followers_segment_id)
     end
 
     def formatted_subject(subject)
@@ -63,14 +58,6 @@ module Outreach
         "#{subject.slice(0, (MAX_SUBJECT_LENGTH - 2)).split(' ')[0..-2].join(' ')}..."
       else
         subject
-      end
-    end
-
-    def html_path
-      if @organization.feature_notification_org?
-        ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
-      else
-        ERB_NEWS_TEMPLATE_PATH
       end
     end
 

@@ -46,7 +46,8 @@ class SessionsController < Devise::SessionsController
     fb_user_info[:extra_info][:gender] = fb_user_info[:gender]
 
     registration_attrs = {
-      location: Location.find_by_slug_or_id(params[:location_id])
+      location: Location.find_by_slug_or_id(params[:location_id]),
+      handle: params[:handle]
     }
 
     user = User.from_facebook_oauth(fb_user_info, registration_attrs)

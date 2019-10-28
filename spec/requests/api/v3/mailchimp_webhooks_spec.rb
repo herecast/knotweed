@@ -28,7 +28,7 @@ RSpec.describe 'MailchimpWebook Requests', type: :request do
                                   email: mailchimp_webhook_content['data']['email']
         @org_subscription = FactoryGirl.create :organization_subscription,
           user: user,
-          organization: FactoryGirl.create(:organization),
+          caster: FactoryGirl.create(:caster),
           deleted_at: nil
       end
 

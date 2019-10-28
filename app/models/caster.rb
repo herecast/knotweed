@@ -53,6 +53,11 @@
 #  publisher_agreement_version      :string
 #  handle                           :string
 #  mc_followers_segment_id          :string
+#  email_is_public                  :boolean          default(FALSE)
+#  background_image                 :string
+#  description                      :string
+#  website                          :string
+#  phone                            :string
 #
 # Indexes
 #
@@ -62,6 +67,20 @@
 #
 
 class Caster < User
+  searchkick callbacks: :async,
+             batch_size: 1000,
+             index_prefix: Figaro.env.searchkick_index_prefix,
+             searchable: %i[name handle description]
+
+  def search_data
+    {
+      id: id,
+      name: name || organization&.name,
+      handle: handle,
+      description: description || organization&.description
+    }
+  end
+
   def mc_followers_segment_name
     "#{id}-caster-segment"
   end

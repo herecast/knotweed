@@ -14,7 +14,8 @@ describe RegistrationsController, type: :controller do
       location_id: user.location.id,
       email: user.email,
       password: user.password,
-      password_confirmation: user.password
+      password_confirmation: user.password,
+      handle: 'handle'
     }
   end
 

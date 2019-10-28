@@ -14,9 +14,8 @@ class GatherFeedRecords
   def call
     return empty_payload if org_present_and_biz_feed_inactive?
 
-    do_search if @params[:content_type] != 'organization'
+    do_search
     create_content_array
-    conditionally_add_carousels
     { records: @records, total_entries: @total_entries }
   end
 
@@ -37,22 +36,8 @@ class GatherFeedRecords
   end
 
   def create_content_array
-    if @params[:content_type] == 'organization'
-      organizations = Organization.search(query, organization_opts)
-      @total_entries = organizations.total_entries
-    end
-    @records = (organizations || @contents).map do |item|
+    @records = @contents.map do |item|
       FeedItem.new(item)
-    end
-  end
-
-  def conditionally_add_carousels
-    if first_page_of_standard_search_request?
-      opts = { title: 'Contributors', query: query }
-      carousel = Carousels::OrganizationCarousel.new(opts)
-      if carousel.organizations.count > 0
-        @records.insert(0, FeedItem.new(carousel))
-      end
     end
   end
 
@@ -103,7 +88,6 @@ class GatherFeedRecords
 
   def first_page_of_standard_search_request?
     @params[:query].present? &&
-      @params[:content_type] != 'organization' &&
       @params[:organization_id].blank? &&
       page == 1
   end
