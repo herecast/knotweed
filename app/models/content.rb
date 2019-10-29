@@ -114,7 +114,7 @@ class Content < ActiveRecord::Base
   searchkick callbacks: :async,
              batch_size: 750,
              index_prefix: Figaro.env.searchkick_index_prefix,
-             searchable: %i[content title subtitle author_name organization_name],
+             searchable: %i[content title subtitle caster_handle caster_name],
              settings: {
                analysis: {
                  analyzer: {

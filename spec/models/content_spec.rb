@@ -191,11 +191,17 @@ describe Content, type: :model do
   describe 'Content.search', elasticsearch: true do
     describe 'organization name' do
       before do
+        @caster = FactoryGirl.create :caster, handle: 'handle', name: 'name'
         @content = FactoryGirl.create :content
       end
 
-      it 'should index organization name' do
-        search = Content.search(@content.organization.name)
+      it 'should index caster name' do
+        search = Content.search(@content.caster.name)
+        expect(search.results).to eq([@content])
+      end
+
+      it 'should index caster handle' do
+        search = Content.search(@content.caster.handle)
         expect(search.results).to eq([@content])
       end
     end

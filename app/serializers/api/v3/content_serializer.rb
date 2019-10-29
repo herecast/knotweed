@@ -8,6 +8,8 @@ module Api
                  :campaign_end,
                  :campaign_start,
                  :caster,
+                 :caster_handle,
+                 :caster_name,
                  :click_count,
                  :comment_count,
                  :commenter_count,
@@ -77,6 +79,18 @@ module Api
           }
         else
           {}
+        end
+      end
+
+      def caster_handle
+        if caster_object
+          caster_object.handle
+        end
+      end
+
+      def caster_name
+        if caster_object
+          caster_object.name || caster_object.organization&.name
         end
       end
 
