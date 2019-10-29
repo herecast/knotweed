@@ -86,13 +86,5 @@ FactoryGirl.define do
         user.add_role :admin
       end
     end
-
-    factory :organization_admin do
-      name 'Test Organization Admin'
-      after(:create) do |user|
-        org = FactoryGirl.create :organization
-        user.add_role :manager, org
-      end
-    end
   end
 end

@@ -21,8 +21,7 @@
       = render partial: 'payment_recipients/partials/row',
         locals: { payment_recipient: pr }
 %hr
-  = render partial: 'users/partials/search_form',
-    locals: { search_type: 'payment_recipient' }
+  = render partial: 'users/partials/search_form'
 
 .modal.fade.modal-hack#payment_recipient_form
   .modal-header

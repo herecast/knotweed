@@ -4,9 +4,7 @@
     = label_tag "Search for User", nil, class: 'control-label'
     .controls
       = text_field_tag 'user_search', nil, id: 'user_search',
-        data: { search_url: user_search_path,
-          search_type: local_assigns[:search_type],
-          managed_id: local_assigns[:managed_id]}
+        data: { search_url: user_search_path }
 
   %table#user_search_results.table.table-striped.table-hover
     %thead

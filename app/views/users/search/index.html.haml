@@ -5,14 +5,9 @@
       %td= u.name
       %td= u.email
       %td.actions
-        - if @context[:search_type].in? %w(organization)
-          = link_to "add", user_managers_path(u,
-              organization_id: @context[:organization_id]),
-              method: :post, class: "btn btn-mini btn-warning"
-        - elsif @context[:search_type] == 'payment_recipient'
-          = link_to '+ Add', '#',
-            class: 'btn btn-small btn-success payment-recipient-action-link',
-            data: { form_url: new_payment_recipient_path(user_id: u.id) }
+        = link_to '+ Add', '#',
+          class: 'btn btn-small btn-success payment-recipient-action-link',
+          data: { form_url: new_payment_recipient_path(user_id: u.id) }
 
 - else
   No results found.

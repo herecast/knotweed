@@ -54,8 +54,6 @@
         %th Username
         %th Email
         %th Registered
-        %th Role
-        %th Organization
         %th Source
         %th Confirmed?
         %th
@@ -66,10 +64,6 @@
           %td= link_to user.name, user
           %td= user.email
           %td= user.created_at.try(:to_date)
-          %td
-            -user.unique_roles.each do |name|
-              = "#{name}<br>".html_safe
-          %td= Organization.with_role(:manager, user).first.try(:name)
           - if user.social_logins.present?
             %td= user.social_logins.first.provider
           -else

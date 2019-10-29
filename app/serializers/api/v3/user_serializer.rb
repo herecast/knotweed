@@ -13,8 +13,6 @@ module Api
                  :test_group,
                  :user_image_url,
                  :skip_analytics,
-                 :managed_organization_ids,
-                 :can_publish_news?,
                  :location_confirmed,
                  :has_had_bookmarks,
                  :is_blogger,
@@ -33,15 +31,6 @@ module Api
 
       def user_image_url
         object.try(:avatar).try(:url)
-      end
-
-      def managed_organization_ids
-        if context.present? && context[:current_ability]
-          orgs = Organization.not_archived.with_role(:manager, object)
-          (orgs + orgs.map(&:get_all_children).flatten).map(&:id).uniq
-        else
-          []
-        end
       end
 
       def is_blogger

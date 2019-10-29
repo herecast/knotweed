@@ -42,7 +42,6 @@ Rails.application.routes.draw do
         put :update_subscription
       end
       resources :archivings, only: %i[new create], controller: 'users/archivings'
-      resources :managers, only: %i[create destroy], controller: 'users/managers'
     end
     post '/users/admin-create', to: 'users#create', as: 'create_user'
     put '/users/:id/admin-update', to: 'users#update', as: 'update_user'

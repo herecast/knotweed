@@ -150,19 +150,6 @@ describe UsersController, type: :controller do
   end
 
   describe 'PUT #update' do
-    context 'when successful update of managed organization' do
-      before do
-        @organization = FactoryGirl.create :organization
-      end
-
-      subject { put :update, params: { id: @user.id, user: { name: 'bill', managed_organization_id: @organization.id } } }
-
-      it 'redirects to user' do
-        subject
-        expect(response.code).to eq '302'
-      end
-    end
-
     context 'when successful update' do
       before do
         @location = FactoryGirl.create :location

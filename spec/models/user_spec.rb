@@ -190,48 +190,6 @@ describe User, type: :model do
     end
   end
 
-  describe 'can_publish_news?' do
-    before do
-      @user = FactoryGirl.create :user
-    end
-
-    subject { @user.can_publish_news? }
-
-    it 'should be false if the user can\'t manage any organizations' do
-      expect(subject).to be_falsey
-    end
-
-    context 'with user associated with a non-news-publishing organization' do
-      before do
-        @org = FactoryGirl.create :organization, can_publish_news: false
-        @user.add_role :manager, @org
-      end
-
-      it { is_expected.to be_falsey }
-    end
-
-    context 'with user associated with a news-publishing organization' do
-      before do
-        @org = FactoryGirl.create :organization, can_publish_news: true
-        @user.add_role :manager, @org
-      end
-
-      it { is_expected.to be_truthy }
-    end
-  end
-
-  describe '#managed_organizations' do
-    before do
-      @user = FactoryGirl.create :user
-      @organization = FactoryGirl.create :organization
-      @user.add_role(:manager, @organization)
-    end
-
-    it 'returns managed organizations' do
-      expect(@user.managed_organizations).to match_array [@organization]
-    end
-  end
-
   describe 'subscription updates' do
     before do
       @user = FactoryGirl.create :user

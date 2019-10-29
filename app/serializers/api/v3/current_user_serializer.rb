@@ -9,7 +9,6 @@ module Api
                  :listserv_name,
                  :test_group,
                  :skip_analytics,
-                 :can_publish_news?,
                  :location_confirmed,
                  :has_had_bookmarks,
                  :is_blogger,

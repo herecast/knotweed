@@ -114,24 +114,12 @@ class User < ActiveRecord::Base
   FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
   validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
 
-  def managed_organization_id
-    Organization.not_archived.with_role(:manager, self).first.try(:id)
-  end
-
-  def is_organization_manager?
-    managed_organization_id.present?
-  end
-
   default_scope { order('id ASC') }
 
   scope :sales_agents, -> { joins(:roles).where(roles: { name: 'sales agent' }) }
   scope :promoters, -> { joins(:roles).where(roles: { name: 'promoter' }) }
   scope :with_roles, -> { where('(select count(user_id) from users_roles where user_id=users.id) > 0').includes(:roles) }
   scope :not_archived, -> { where(archived: [false, nil]) }
-
-  def managed_organizations
-    Organization.not_archived.with_role(:manager, self)
-  end
 
   def ensure_authentication_token
     if authentication_token.blank?
@@ -153,12 +141,6 @@ class User < ActiveRecord::Base
 
   def ability
     @ability ||= Ability.new(self)
-  end
-
-  # computed property that checks if the user has permission to manage
-  # any organizations that have can_publish_news=true
-  def can_publish_news?
-    Organization.accessible_by(ability, :manage).where(can_publish_news: true).count > 0
   end
 
   attr_accessor :reset_password_return_url

@@ -333,18 +333,5 @@ describe Api::V3::PromotionBannersController, type: :controller do
         expect(assigns(:promotion_banner)).to eq(@banner)
       end
     end
-
-    context 'as organization manager' do
-      before do
-        organization = FactoryGirl.create :organization
-        @banner.promotion.content.update_attribute :organization_id, organization.id
-        @user.add_role :manager, organization
-      end
-
-      it 'should respond with content' do
-        subject
-        expect(assigns(:promotion_banner)).to eq @banner
-      end
-    end
   end
 end

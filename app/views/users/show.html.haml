@@ -17,10 +17,6 @@
             - if @user.roles.include?(role)
               %p
                 = role.pretty_name
-        .span4
-          %h4 Managed Organizations
-          - @user.managed_organizations.each do |org|
-            %p #{org.name}
       .row-fluid
         %h4 Digest Subscriptions
         %table.table.table-striped.table-bordered.table-condensed

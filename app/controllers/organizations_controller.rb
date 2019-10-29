@@ -44,7 +44,6 @@ class OrganizationsController < ApplicationController
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       redirect_to form_submit_redirect_path(@organization.id)
     else
-      @managers = User.with_role(:manager, @organization)
       render action: 'edit'
     end
   end

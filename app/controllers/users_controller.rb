@@ -55,11 +55,9 @@ class UsersController < ApplicationController
     @user.skip_reconfirmation!
     params[:user].delete(:password) if params[:user][:password].blank?
     if @user.update_attributes(user_params)
-      process_user_organizations
       redirect_to @user, notice: 'User updated.'
     else
       @digests = Listserv.all
-      @organizations = Organization.with_role(:manager, @user)
       render action: 'edit', alert: 'Unable to update user.'
     end
   end
@@ -97,7 +95,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     authorize! :create, @user
-    process_user_organizations
     if @user.save
       flash[:notice] = 'User created.'
       redirect_to @user
@@ -130,12 +127,6 @@ class UsersController < ApplicationController
           attrs[:role_ids] << Role.get(key.to_s).id if value == 'on'
         end
       end
-    end
-  end
-
-  def process_user_organizations
-    params[:user].each do |key, value|
-      @user.add_role :manager, Organization.find_by(id: value) if key.include?('controlled_organization')
     end
   end
 
