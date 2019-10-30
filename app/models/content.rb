@@ -132,8 +132,7 @@ class Content < ActiveRecord::Base
              :images,
              :created_by,
              :location,
-             children: [:created_by],
-             organization: %i[locations organization_locations])
+             children: [:created_by])
       .where('organization_id NOT IN (4,5,328)')
       .where('content_category IS NOT NULL')
       .where('raw_content IS NOT NULL')

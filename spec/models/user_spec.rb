@@ -226,22 +226,27 @@ describe User, type: :model do
     context 'when user has subscriptions, but'
   end
 
-  describe 'Updating avatar triggers a reindex of linked content' do
-    subject { FactoryGirl.create :user }
+  describe 'Updating content relevant attrs triggers a reindex of linked content' do
+    let(:user) { FactoryGirl.create :user }
 
-    describe 'changing avatar' do
-      it do
-        expect do
-          subject.update! avatar: 'newavatar.jpg'
-        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+    User::CONTENT_RELEVANT_ATTRS.each do |attr|
+      describe "changing #{attr}" do
+        subject { user.update_attribute(attr.to_sym, 'new value') }
+
+        it 'triggers reindex' do
+          expect { subject }.to have_enqueued_job(
+            ReindexAssociatedContentJob
+          ).with(user)
+        end
       end
     end
 
     describe 'changing a non-dependent attribute' do
+      subject { user.update_attribute(:fullname, 'Robert Paulson') }
       it 'does not trigger reindex' do
-        expect do
-          subject.update! fullname: 'Robert Paulson'
-        end.to_not have_enqueued_job(ReindexAssociatedContentJob)
+        expect { subject }.to_not have_enqueued_job(
+          ReindexAssociatedContentJob
+        )
       end
     end
   end

@@ -106,10 +106,18 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :handle, case_sensitive: false
 
   after_commit :update_subscriptions_locations,
-               :trigger_content_reindex_if_avatar_changed!,
+               :trigger_content_reindex_if_content_relevant_attrs_changed,
                on: :update
 
   ransacker :social_login
+
+  CONTENT_RELEVANT_ATTRS = [
+    'avatar',
+    'name',
+    'handle',
+    'description',
+    'email_is_public'
+  ]
 
   FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
   validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
@@ -290,8 +298,8 @@ class User < ActiveRecord::Base
     end
   end
 
-  def trigger_content_reindex_if_avatar_changed!
-    if previous_changes.key?(:avatar)
+  def trigger_content_reindex_if_content_relevant_attrs_changed
+    if (previous_changes.keys & CONTENT_RELEVANT_ATTRS).present?
       ReindexAssociatedContentJob.perform_later self
     end
   end
