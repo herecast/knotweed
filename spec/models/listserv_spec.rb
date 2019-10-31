@@ -218,13 +218,13 @@ describe Listserv, type: :model do
 
   describe '#digest_contents(location_ids)' do
     let!(:listserv) { FactoryGirl.create :listserv }
-    let(:org) { FactoryGirl.create :organization }
     let(:location) { FactoryGirl.create :location }
+    let(:caster) { FactoryGirl.create :caster }
 
     subject { listserv.digest_contents([location.id]) }
 
-    it 'should only return max three records per organization' do
-      FactoryGirl.create_list :content, 5, :news, organization: org, pubdate: 1.hour.ago, location: location
+    it 'should only return max three records per caster' do
+      FactoryGirl.create_list :content, 5, :news, created_by: caster, pubdate: 1.hour.ago, location: location
       expect(subject.length).to be 3
     end
 
@@ -245,7 +245,7 @@ describe Listserv, type: :model do
     end
 
     it 'should not include removed content' do
-      removed_content = FactoryGirl.create :content, :news, organization: org, pubdate: 1.hour.ago, location: location, removed: true
+      removed_content = FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: location, removed: true
      expect(subject).to eq []
     end
 

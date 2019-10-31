@@ -119,9 +119,9 @@ class Listserv < ActiveRecord::Base
   end
 
   def digest_contents(location_ids)
-    content_ids = Organization
+    content_ids = Content
       .select('contents.id')
-      .joins('INNER JOIN contents ON organizations.id = contents.organization_id')
+      .joins('INNER JOIN users ON users.id = contents.created_by_id')
       .joins('INNER JOIN locations ON contents.location_id = locations.id')
       .where('pubdate IS NOT NULL AND pubdate < NOW() AND pubdate >= ?', digest_date_bound)
       .where(contents: { content_category: 'news' })
@@ -130,7 +130,7 @@ class Listserv < ActiveRecord::Base
       .where('contents.id IN (
         SELECT id
         FROM contents
-        WHERE organization_id = organizations.id AND pubdate >= ? AND pubdate < NOW() AND pubdate IS NOT NULL
+        WHERE created_by_id = users.id AND pubdate >= ? AND pubdate < NOW() AND pubdate IS NOT NULL
         ORDER BY view_count DESC LIMIT 3
       )', digest_date_bound)
     Content.where(id: content_ids).order(view_count: :desc).limit(limit)
