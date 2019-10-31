@@ -227,16 +227,27 @@ describe User, type: :model do
   end
 
   describe 'Updating content relevant attrs triggers a reindex of linked content' do
+    let(:location) { FactoryGirl.create :location }
     let(:user) { FactoryGirl.create :user }
 
     User::CONTENT_RELEVANT_ATTRS.each do |attr|
-      describe "changing #{attr}" do
-        subject { user.update_attribute(attr.to_sym, 'new value') }
+      if attr == 'location_id'
+        subject { user.update_attribute(:location_id, location.id) }
 
         it 'triggers reindex' do
           expect { subject }.to have_enqueued_job(
             ReindexAssociatedContentJob
           ).with(user)
+        end
+      else
+        describe "changing #{attr}" do
+          subject { user.update_attribute(attr.to_sym, 'new value') }
+
+          it 'triggers reindex' do
+            expect { subject }.to have_enqueued_job(
+              ReindexAssociatedContentJob
+            ).with(user)
+          end
         end
       end
     end

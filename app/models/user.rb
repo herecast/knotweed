@@ -116,7 +116,8 @@ class User < ActiveRecord::Base
     'name',
     'handle',
     'description',
-    'email_is_public'
+    'email_is_public',
+    'location_id'
   ]
 
   FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
