@@ -38,7 +38,7 @@ module Searchable
         if base_class == Content
           user_owns_content?(args, attrs) || user_is_admin?(args)
         elsif base_class == Organization
-          args[:user]&.can_manage_organization?(args[:id]) || false
+          false
         end
       end
 

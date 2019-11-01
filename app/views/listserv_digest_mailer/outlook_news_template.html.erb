@@ -339,10 +339,8 @@
                                                             <tr style="font-family:Helvetica,sans-serif!important">
                                                               <%# <% raise SoemtingError %1> %>
                                                               <td style="padding:0px;padding-right:5px;width:45px;font-family:Helvetica,sans-serif!important">
-                                                                <% author_name = post.created_by.name || post.organization.try(:name) %>
-                                                                <% image_url = post.created_by.avatar_url || post.organization.try(:profile_image_url) %>
-                                                                <% if image_url.present? %>
-                                                                  <img alt="<%= author_name %>" src="<%= digest_image_path(image_url, width: 40, height: 40) %>" style="border-radius:1000px;max-width:40px;vertical-align:middle;min-height:40px;padding:0px!important;display:inline-block!important;border:none!important">
+                                                                <% if post.created_by.avatar? %>
+                                                                  <img alt="<%= post.created_by.name %>" src="<%= digest_image_path(post.created_by.avatar_url, width: 40, height: 40) %>" style="border-radius:1000px;max-width:40px;vertical-align:middle;min-height:40px;padding:0px!important;display:inline-block!important;border:none!important">
                                                                 <% end %>
                                                               </td>
                                                               <td style="padding:0px;font-family:Helvetica,sans-serif!important;color:#404347!important">
@@ -352,7 +350,7 @@
                                                                   <%= post.pubdate.strftime("%A, %B %e %Y") %>
                                                                 <% end %>
                                                                 <br>
-                                                                <span style="text-decoration:none!important;color:#404347!important;line-height:1" target="_blank"><%= author_name %></span></td>
+                                                                <span style="text-decoration:none!important;color:#404347!important;line-height:1" target="_blank"><%= post.created_by.name %></span></td>
                                                             </tr>
                                                           </tbody>
                                                         </table>

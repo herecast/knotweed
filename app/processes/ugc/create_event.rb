@@ -55,7 +55,6 @@ module Ugc
           :zip
         ],
         content_attributes: [
-          :organization_id,
           :raw_content,
           :title,
           :location_id,
@@ -97,7 +96,6 @@ module Ugc
         biz_feed_public: @params[:content][:biz_feed_public],
         sunset_date: @params[:content][:sunset_date],
         url: @params[:content][:url],
-        organization_id: organization_id,
         images: [@params[:content][:image]],
         pubdate: Time.zone.now,
         content_category: 'event',
@@ -106,14 +104,6 @@ module Ugc
         created_by: @current_user,
         origin: Content::UGC_ORIGIN
       }
-    end
-
-    def organization_id
-      if @params[:content][:organization_id].present?
-        @params[:content][:organization_id]
-      else
-        Organization.find_by(standard_ugc_org: true).id
-      end
     end
 
     def conditionally_contact_user_and_ad_team

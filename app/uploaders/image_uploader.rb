@@ -75,6 +75,10 @@ class ImageUploader < CarrierWave::Uploader::Base
     model.instance_variable_get(var) || model.instance_variable_set(var, SecureRandom.hex(length / 2))
   end
 
+  def full_cache_path
+    "#{::Rails.root}/public/#{cache_dir}/#{cache_name}"
+  end
+
   private
 
   def store_dimensions_and_type

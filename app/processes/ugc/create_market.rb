@@ -51,7 +51,6 @@ module Ugc
           content_category
           pubdate
           timestamp
-          organization_id
           promote_radius
           sunset_date
           location_id
@@ -74,17 +73,12 @@ module Ugc
           content_category: 'market',
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          organization_id: @params[:content][:organization_id] || default_org.id,
           location_id: @params[:content][:location_id],
           created_by: @current_user,
           origin: Content::UGC_ORIGIN,
           url: @params[:content][:url]
         }
       }
-    end
-
-    def default_org
-      Organization.find_by(standard_ugc_org: true)
     end
 
     def conditionally_schedule_outreach_email

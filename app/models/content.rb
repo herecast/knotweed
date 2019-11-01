@@ -133,7 +133,7 @@ class Content < ActiveRecord::Base
              :created_by,
              :location,
              children: [:created_by])
-      .where('organization_id NOT IN (4,5,328)')
+      .where('organization_id NOT IN (4,5,328) OR organization_id IS NULL')
       .where('content_category IS NOT NULL')
       .where('raw_content IS NOT NULL')
       .where("raw_content != ''")

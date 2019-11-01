@@ -11,15 +11,15 @@ module Api
 
 
       def caster_name
-        object.caster&.name || object.organization&.name
+        object.caster.name
       end
 
       def caster_handle
-        object.caster&.handle
+        object.caster.handle
       end
 
       def caster_avatar_image_url
-        object.caster&.avatar_url || object.organization&.profile_image_url
+        object.caster.avatar_url
       end
     end
   end

@@ -51,7 +51,6 @@ module Ugc
           content_category
           pubdate
           timestamp
-          organization_id
           promote_radius
           sunset_date
           location_id

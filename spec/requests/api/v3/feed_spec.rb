@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'Feed endpoints', type: :request do
-  before { FactoryGirl.create :organization, name: 'Listserv' }
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
@@ -107,18 +106,6 @@ describe 'Feed endpoints', type: :request do
                     }
                   end,
           image_url: content.images[0].url,
-          organization: {
-            id: org.id,
-            name: org.name,
-            profile_image_url: org.profile_image_url || org.logo_url,
-            biz_feed_active: !!org.biz_feed_active,
-            description: org.description,
-            city: org.business_locations&.first&.city,
-            state: org.business_locations&.first&.state,
-            active_subscriber_count: org.active_subscriber_count
-          },
-          organization_id: org.id,
-          organization_name: org.name,
 
           # @TODO: parent fields should be revisited, do we need them?
           parent_content_id: content.parent_id,
@@ -182,7 +169,6 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    let(:org) { FactoryGirl.create :organization }
     let(:headers) { { 'ACCEPT' => 'application/json' } }
 
     let(:locations) do
@@ -194,34 +180,29 @@ describe 'Feed endpoints', type: :request do
     let!(:news) do
       FactoryGirl.create :content, :news,
                          created_by: user,
-                         organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
     let!(:event) do
       FactoryGirl.create :content, :event,
                          created_by: user,
-                         organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
     let!(:market) do
       FactoryGirl.create :content, :market_post,
                          created_by: user,
-                         organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
     let!(:talk) do
       FactoryGirl.create :content, :talk,
                          created_by: user,
-                         organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
     let!(:comment) do
-      FactoryGirl.create :content, :comment, organization: org,
-                                             parent_id: talk.id
+      FactoryGirl.create :content, :comment, parent_id: talk.id
     end
 
     context 'news content' do
@@ -345,7 +326,7 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    context 'when user has blocked orgs' do
+    context 'when user has blocked Casters' do
       before do
         caster = FactoryGirl.create :caster
         @blocked_content = FactoryGirl.create :content, :news,
@@ -358,7 +339,7 @@ describe 'Feed endpoints', type: :request do
 
       subject { get '/api/v3/feed', params: {}, headers: headers.merge(auth_headers) }
 
-      it 'does not return blocked Org content' do
+      it 'does not return blocked Caster content' do
         subject
         returned_ids = response_json[:feed_items].map { |i| i[:content][:id] }
         expect(returned_ids).not_to include @blocked_content.id
@@ -369,25 +350,7 @@ describe 'Feed endpoints', type: :request do
       before do
         @market_post = FactoryGirl.create :content, :market_post,
                                           title: news.title,
-                                          organization: org,
                                           location_id: user.location_id
-        @organization = FactoryGirl.create :organization,
-                                           name: news.title,
-                                           org_type: 'Business'
-        @second_organization = FactoryGirl.create :organization,
-                                                  name: "#{news.title} 2",
-                                                  org_type: 'Blog',
-                                                  can_publish_news: true
-        @archived_business = FactoryGirl.create :organization,
-                                                name: "#{news.title} 3",
-                                                org_type: 'Business',
-                                                archived: true,
-                                                can_publish_news: true
-        @archived_publisher = FactoryGirl.create :organization,
-                                                 name: "#{news.title} 4",
-                                                 org_type: 'Blog',
-                                                 archived: true,
-                                                 can_publish_news: true
       end
 
       subject { get '/api/v3/feed', params: { query: news.title }, headers: auth_headers }
@@ -396,18 +359,6 @@ describe 'Feed endpoints', type: :request do
         subject
         contents = response_json[:feed_items].select { |i| i[:model_type] == 'content' }
         expect(contents.length).to eq 2
-      end
-
-      context 'when one carousel returns no Organizations' do
-        before do
-          @second_organization.update_attribute(:name, 'non-search')
-        end
-
-        it 'call only returns carousel with Organizations' do
-          subject
-          collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-          expect(collections.length).to eq 0
-        end
       end
     end
 

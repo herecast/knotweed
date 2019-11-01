@@ -30,9 +30,6 @@ module Api
                  :like_count,
                  :location,
                  :location_id,
-                 :organization,
-                 :organization_id,
-                 :organization_name,
                  :parent_content_id,
                  :parent_content_type,
                  :parent_event_instance_id,
@@ -63,10 +60,10 @@ module Api
         if caster_object
           {
             id: caster_object.id,
-            name: caster_object.name || caster_object.organization&.name,
+            name: caster_object.name,
             handle: caster_object.handle,
-            description: caster_object.description || caster_object.organization&.description,
-            avatar_image_url: caster_object.avatar_url || caster_object.organization&.profile_image_url,
+            description: caster_object.description,
+            avatar_image_url: caster_object.avatar_url,
             active_followers_count: caster_object.active_follower_count,
             location: {
               id: caster_object.location.id,
@@ -259,27 +256,6 @@ module Api
         object.created_by.try(:avatar_url)
       end
 
-      def organization_profile_image_url
-        object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
-      end
-
-      def organization
-        {
-          id: object.organization&.id,
-          name: object.organization&.name,
-          profile_image_url: object&.organization&.profile_image_url || object.organization&.logo_url,
-          biz_feed_active: !!object.organization&.biz_feed_active,
-          description: object.organization&.description,
-          city: object.organization&.business_locations&.first&.city,
-          state: object.organization&.business_locations&.first&.state,
-          active_subscriber_count: object.caster&.active_follower_count
-        }
-      end
-
-      def organization_name
-        object.organization.try :name
-      end
-
       def campaign_start
         object.ad_campaign_start
       end
@@ -329,10 +305,6 @@ module Api
             object.authoremail
           end
         end
-      end
-
-      def organization_biz_feed_active
-        !!object.organization.try(:biz_feed_active)
       end
 
       def schedules

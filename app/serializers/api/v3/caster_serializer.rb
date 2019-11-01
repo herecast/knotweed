@@ -21,31 +21,15 @@ module Api
                  :active_follower_count
 
       def avatar_image_url
-        object.avatar&.url || object.organization&.profile_image_url
-      end
-
-      def background_image_url
-        object.background_image_url || object.organization&.background_image_url
+        object.avatar.url
       end
 
       def user_id
         object.id
       end
 
-      def name
-        object.name || object.organization&.name
-      end
-
-      def description
-        object.description || object.organization&.description
-      end
-
       def email
         object.email_is_public ? object.email : nil
-      end
-
-      def website
-        object.website || object.organization&.website
       end
 
       def location

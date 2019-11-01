@@ -41,7 +41,6 @@ module Ugc
         :authors,
         :authors_is_created_by,
         :biz_feed_public,
-        :organization_id,
         :promote_radius,
         :pubdate,
         :raw_content,

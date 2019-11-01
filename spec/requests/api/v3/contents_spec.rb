@@ -35,18 +35,6 @@ def content_response_schema(record)
       id: record.id,
       images: [],
       image_url: nil,
-      organization: {
-        id: record.organization&.id,
-        name: record.organization&.name,
-        profile_image_url: record.organization&.profile_image_url || record.organization&.logo_url,
-        biz_feed_active: !!record.organization&.biz_feed_active,
-        description: record.organization&.description,
-        city: record.organization&.business_locations&.first&.city,
-        state: record.organization&.business_locations&.first&.state,
-        active_subscriber_count: record.organization&.active_subscriber_count
-      },
-      organization_id: record.organization&.id,
-      organization_name: record.organization&.name,
       parent_content_id: record.parent_id,
       parent_content_type: record.parent.try(:content_type),
       parent_event_instance_id: record.parent.try(:channel).try(:event_instances).try(:first).try(:id),
@@ -82,14 +70,12 @@ def content_response_schema(record)
 end
 
 describe 'Contents Endpoints', type: :request do
-  before { FactoryGirl.create :organization, standard_ugc_org: true }
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
   describe 'GET /api/v3/contents/:id', elasticsearch: true do
-    let(:org) { FactoryGirl.create :organization }
     let(:headers) { { 'ACCEPT' => 'application/json' } }
-    let(:content) { FactoryGirl.create :content, organization: org }
+    let(:content) { FactoryGirl.create :content }
 
     subject { get "/api/v3/contents/#{content.id}", headers: headers }
 
@@ -98,7 +84,7 @@ describe 'Contents Endpoints', type: :request do
       expect(response_json[:content]).not_to be nil
     end
 
-    it 'matches the expect json schema' do
+    it 'matches the expected json schema' do
       subject
       expect(response.body).to include_json(content_response_schema(content))
     end
@@ -160,9 +146,7 @@ describe 'Contents Endpoints', type: :request do
                 content_type: 'news',
                 title: 'A distinguished article',
                 content: "<p>Once upon a time...#{'a' * 255}</p><p>Another p</p>",
-                author_name: 'Fred',
-                organization_id: FactoryGirl.create(:organization,
-                                                    can_publish_news: true).id
+                author_name: 'Fred'
               }
             end
 
@@ -181,8 +165,7 @@ describe 'Contents Endpoints', type: :request do
                 content_response_schema(Content.last).deep_merge(
                   content: {
                     title: valid_news_params[:title],
-                    content: valid_news_params[:content],
-                    organization_id: valid_news_params[:organization_id]
+                    content: valid_news_params[:content]
                   }
                 )
               )
@@ -219,10 +202,6 @@ describe 'Contents Endpoints', type: :request do
           include ActiveJob::TestHelper
 
           context 'valid params' do
-            let(:organization) do
-              FactoryGirl.create(:organization)
-            end
-
             let(:valid_market_params) do
               {
                 contact_email: 'test@test.com',
@@ -230,7 +209,6 @@ describe 'Contents Endpoints', type: :request do
                 content: '<p>Oxygen: Inhale</p>',
                 content_type: 'market',
                 cost: '$10',
-                organization_id: organization.id,
                 promote_radius: 10,
                 title: 'TFK',
                 sold: false,

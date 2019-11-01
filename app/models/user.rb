@@ -252,10 +252,6 @@ class User < ActiveRecord::Base
     caster_hides.active.pluck(:caster_id)
   end
 
-  def can_manage_organization?(id)
-    roles.where(name: 'manager', resource_type: 'Organization', resource_id: id).present?
-  end
-
   def active_follower_count
     caster_followers.active.count
   end
