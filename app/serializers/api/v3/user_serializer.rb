@@ -17,7 +17,7 @@ module Api
                  :has_had_bookmarks,
                  :is_blogger,
                  :organization_subscriptions,
-                 :organization_hides,
+                 :caster_hides,
                  :feed_card_size,
                  :publisher_agreement_confirmed
 
@@ -54,7 +54,7 @@ module Api
         end
       end
 
-      def organization_hides
+      def caster_hides
         object.caster_hides.active.map do |caster_hide|
           CasterHideSerializer.new(caster_hide, root: false)
         end

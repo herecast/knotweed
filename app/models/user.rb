@@ -77,8 +77,8 @@ class User < ActiveRecord::Base
   has_many :caster_followers, class_name: 'OrganizationSubscription', foreign_key: 'caster_id'
   has_many :caster_follows, class_name: 'OrganizationSubscription', foreign_key: 'user_id'
 
-  has_many :caster_hides, class_name: 'OrganizationHide', foreign_key: 'user_id'
-  has_many :caster_hiders, class_name: 'OrganizationHide', foreign_key: 'caster_id'
+  has_many :caster_hides
+  has_many :caster_hiders, class_name: 'CasterHide', foreign_key: 'caster_id'
 
   has_one :organization
 

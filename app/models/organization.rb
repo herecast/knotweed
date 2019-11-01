@@ -113,7 +113,6 @@ class Organization < ActiveRecord::Base
 
   has_many :contents
   has_many :organization_subscriptions
-  has_many :organization_hides
 
   has_many :organization_content_tags
   has_many :tagged_contents, through: :organization_content_tags

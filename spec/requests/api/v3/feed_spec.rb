@@ -332,7 +332,7 @@ describe 'Feed endpoints', type: :request do
         @blocked_content = FactoryGirl.create :content, :news,
                                       created_by_id: caster.id,
                                       location_id: user.location_id
-        FactoryGirl.create :organization_hide,
+        FactoryGirl.create :caster_hide,
                            user_id: user.id,
                            caster_id: caster.id
       end

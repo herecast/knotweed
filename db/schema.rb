@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191029194602) do
+ActiveRecord::Schema.define(version: 20191030170642) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -55,6 +55,18 @@ ActiveRecord::Schema.define(version: 20191029194602) do
     t.integer  'promotion_ids', default: [], array: true
     t.index ['community_ids'], name: 'index_campaigns_on_community_ids', using: :btree
     t.index ['listserv_id'], name: 'index_campaigns_on_listserv_id', using: :btree
+  end
+
+  create_table 'caster_hides', force: :cascade do |t|
+    t.bigint   'user_id'
+    t.datetime 'deleted_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.string   'flag_type'
+    t.bigint   'content_id'
+    t.integer  'caster_id'
+    t.index ['content_id'], name: 'index_caster_hides_on_content_id', using: :btree
+    t.index ['user_id'], name: 'index_caster_hides_on_user_id', using: :btree
   end
 
   create_table 'channels', id: :bigserial, force: :cascade do |t|
@@ -371,19 +383,6 @@ ActiveRecord::Schema.define(version: 20191029194602) do
     t.datetime 'updated_at'
     t.index ['content_id'], name: 'index_organization_content_tags_on_content_id', using: :btree
     t.index ['organization_id'], name: 'index_organization_content_tags_on_organization_id', using: :btree
-  end
-
-  create_table 'organization_hides', force: :cascade do |t|
-    t.bigint   'user_id'
-    t.datetime 'deleted_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.string   'flag_type'
-    t.bigint   'content_id'
-    t.integer  'caster_id'
-    t.index ['caster_id'], name: 'index_organization_hides_on_caster_id'
-    t.index ['content_id'], name: 'index_organization_hides_on_content_id'
-    t.index ['user_id'], name: 'index_organization_hides_on_user_id'
   end
 
   create_table 'organization_locations', force: :cascade do |t|

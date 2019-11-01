@@ -15,23 +15,23 @@ RSpec.describe 'Caster Hides Endpoints', type: :request do
            params: params
     end
 
-    it 'creates OrganizationHide' do
+    it 'creates CasterHide' do
       expect { subject }.to change {
-        OrganizationHide.count
+        CasterHide.count
       }.by 1
     end
 
-    context 'when OrganizationHide exists but deleted_at is not null' do
+    context 'when CasterHide exists but deleted_at is not null' do
       before do
-        @caster_hide = FactoryGirl.create :organization_hide,
+        @caster_hide = FactoryGirl.create :caster_hide,
                                        user_id: user.id,
                                        caster_id: caster.id,
                                        deleted_at: Date.yesterday
       end
 
-      it 'does not create new OrganizationHide' do
+      it 'does not create new CasterHide' do
         expect { subject }.not_to change {
-          OrganizationHide.count
+          CasterHide.count
         }
       end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Caster Hides Endpoints', type: :request do
 
   describe 'DELETE /api/v3/casters/hides/:id' do
     before do
-      @caster_hide = FactoryGirl.create :organization_hide,
+      @caster_hide = FactoryGirl.create :caster_hide,
                                      user_id: user.id,
                                      deleted_at: nil
     end

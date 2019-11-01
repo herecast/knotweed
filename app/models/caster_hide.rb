@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
-# Table name: organization_hides
+# Table name: caster_hides
 #
 #  id         :bigint(8)        not null, primary key
 #  user_id    :bigint(8)
@@ -14,8 +15,8 @@
 #
 # Indexes
 #
-#  index_organization_hides_on_content_id  (content_id)
-#  index_organization_hides_on_user_id     (user_id)
+#  index_caster_hides_on_content_id  (content_id)
+#  index_caster_hides_on_user_id     (user_id)
 #
 # Foreign Keys
 #
@@ -23,5 +24,11 @@
 #  fk_rails_...  (user_id => users.id)
 #
 
-class CasterHide < OrganizationHide
+class CasterHide < ApplicationRecord
+  belongs_to :user, optional: false
+  belongs_to :caster, optional: false
+
+  validates :user_id, uniqueness: { scope: :caster_id }
+
+  scope :active, -> { where(deleted_at: nil) }
 end

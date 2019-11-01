@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
-# Table name: organization_hides
+# Table name: caster_hides
 #
 #  id         :bigint(8)        not null, primary key
 #  user_id    :bigint(8)
@@ -14,8 +15,8 @@
 #
 # Indexes
 #
-#  index_organization_hides_on_content_id  (content_id)
-#  index_organization_hides_on_user_id     (user_id)
+#  index_caster_hides_on_content_id  (content_id)
+#  index_caster_hides_on_user_id     (user_id)
 #
 # Foreign Keys
 #
@@ -25,6 +26,6 @@
 
 require 'rails_helper'
 
-RSpec.describe OrganizationHide, type: :model do
+RSpec.describe CasterHide, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end
