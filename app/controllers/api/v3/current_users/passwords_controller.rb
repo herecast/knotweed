@@ -3,6 +3,7 @@
 module Api
   module V3
     class CurrentUsers::PasswordsController < ApiController
+      before_action :check_logged_in!
 
       def show
         if current_user.valid_password?(params[:password])
