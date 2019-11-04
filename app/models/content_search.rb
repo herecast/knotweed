@@ -62,6 +62,7 @@ class ContentSearch
     standard_query.tap do |attrs|
       following_ids = @current_user.caster_follows.map(&:caster_id).flatten
       attrs[:where][:created_by_id] = following_ids
+      attrs[:where].delete(:location_id)
     end
   end
 
