@@ -16,8 +16,7 @@ module Api
           )
         else
           search_opts = ContentSearch.caster_query(
-            params: params.merge(caster: true),
-            current_user: current_user
+            params: params.merge(caster: true)
           )
         end
 
