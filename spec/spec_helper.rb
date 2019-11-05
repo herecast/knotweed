@@ -10,7 +10,7 @@ if ENV['COVERAGE'] || ENV['CI']
   end
 end
 
-SimpleCov.minimum_coverage 82
+SimpleCov.minimum_coverage 88
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'

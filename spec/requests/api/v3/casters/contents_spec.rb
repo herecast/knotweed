@@ -37,6 +37,39 @@ describe 'Caster Content endpoints', type: :request do
         subject
         expect(response_json[:feed_items].count).to eq @length
       end
+
+      context "when ?bookmarked=true" do
+        before do
+          @bookmarked_content = FactoryGirl.create :content
+          FactoryGirl.create :user_bookmark,
+            content: @bookmarked_content,
+            user_id: caster.id
+        end
+
+        subject { get "/api/v3/casters/#{caster.id}/contents?bookmarked=true" }
+      
+        it "returns Caster's bookmarked content" do
+          subject
+          response_ids = response_json[:feed_items].map { |i| i[:content][:id] }
+          expect(response_ids).to match_array [@bookmarked_content.id]
+        end
+      end
+
+      context "when ?drafts=true" do
+        before do
+          @draft = FactoryGirl.create :content,
+            created_by: caster,
+            pubdate: nil
+        end
+
+        subject { get "/api/v3/casters/#{caster.id}/contents?drafts=true" }
+
+        it "returns drafts" do
+          subject
+          response_ids = response_json[:feed_items].map { |i| i[:content][:id] }
+          expect(response_ids).to match_array [@draft.id]
+        end
+      end
     end
 
     context "?caster_feed=true" do
