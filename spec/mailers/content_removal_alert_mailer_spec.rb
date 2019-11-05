@@ -23,7 +23,7 @@ RSpec.describe ContentRemovalAlertMailer do
 
   context 'when content is a comment' do
     before do
-      @content = FactoryGirl.create :content, :comment
+      @content = FactoryGirl.create :comment
     end
 
     it 'delivers mail' do
@@ -33,7 +33,7 @@ RSpec.describe ContentRemovalAlertMailer do
     end
 
     it 'includes comment as link to the parent content' do
-      expect(subject.body).to include @content.content
+      expect(subject.body).to include @content.sanitized_content
     end
   end
 end

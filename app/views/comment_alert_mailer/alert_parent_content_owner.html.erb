@@ -656,7 +656,7 @@
                             <span style="font-family:arial,helvetica neue,helvetica,sans-serif"><span style="font-size:14px">Hey <%= @parent_content.created_by.name %>,<br>
 <br>
 <% if @comment_hidden %>
-	The following comment: "<%= @comment.content %>" posted by <%= @comment_owner.name %> has been removed from your post <%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %>.<br><br>
+	The following comment: "<%= @comment.sanitized_content %>" posted by <%= @comment_owner.name %> has been removed from your post <%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %>.<br><br>
 	Let us know if you have any questions,<br><br>
 	Best,<br>
 	The HereCast Team

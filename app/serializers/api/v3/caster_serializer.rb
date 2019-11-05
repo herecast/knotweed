@@ -44,9 +44,7 @@ module Api
       end
 
       def total_comment_count
-        opts = ContentSearch.comment_query(params: { id: object.id })
-        opts.delete(:order)
-        Content.search('*', opts).count
+        Comment.where(created_by_id: object.id).count
       end
 
       def total_post_count

@@ -13,7 +13,6 @@ module Api
 
         content_ids = Content.not_deleted
                              .not_removed
-                             .not_comment
                              .where('pubdate <= ?', Time.zone.now)
                              .only_categories(types)
                              .order('pubdate DESC')

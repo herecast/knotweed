@@ -63,15 +63,17 @@ describe 'Feed endpoints', type: :request do
           commenter_count: an_instance_of(Integer).or(be_nil),
           comments: content.comments.map do |comment|
                       {
-                        id: comment.channel.try(:id) || comment.id,
-                        content: comment.sanitized_content,
+                        id: comment.id,
                         content_id: comment.id,
-                        parent_id: comment.parent_id,
+                        content: comment.sanitized_content,
+                        parent_id: comment.content_id,
                         published_at: comment.pubdate.iso8601,
+                        pubdate: comment.pubdate.iso8601,
                         caster_id: comment.created_by.try(:id),
                         caster_handle: comment.created_by.try(:handle),
                         caster_name: comment.created_by.try(:name),
-                        caster_avatar_image_url: comment.created_by.try(:avatar).try(:url)
+                        caster_avatar_image_url: comment.created_by.try(:avatar).try(:url),
+                        title: content.title
                       }
                     end,
           contact_email: an_instance_of(String).or(be_nil),
@@ -143,28 +145,28 @@ describe 'Feed endpoints', type: :request do
 
       context 'when comments exist' do
         let!(:comments) do
-          content.children = FactoryGirl.create_list :content, 7, :comment,
-                                                     created_by: FactoryGirl.create(:user),
-                                                     parent: content
+          FactoryGirl.create_list :comment, 7, created_by: FactoryGirl.create(:user),
+            content: content
         end
 
         it 'embeds the last 6 comments' do
           do_request
-          expect(subject).to include(
-            comments: comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
-              {
-                id: comment.channel.try(:id) || comment.id,
-                content: comment.sanitized_content,
-                content_id: comment.id,
-                parent_id: comment.parent_id,
-                published_at: comment.pubdate.iso8601,
-                caster_id: comment.created_by.try(:id),
-                caster_handle: comment.created_by.try(:handle),
-                caster_name: comment.created_by.try(:name),
-                caster_avatar_image_url: comment.created_by.try(:avatar).try(:url)
-              }
-            end
-          )
+          expected_results = comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
+            {
+              id: comment.id,
+              content_id: comment.id,
+              content: comment.sanitized_content,
+              parent_id: comment.content_id,
+              published_at: comment.pubdate.iso8601,
+              pubdate: comment.pubdate.iso8601,
+              caster_id: comment.created_by.try(:id),
+              caster_handle: comment.created_by.try(:handle),
+              caster_name: comment.created_by.try(:name),
+              caster_avatar_image_url: comment.created_by.try(:avatar).try(:url),
+              title: content.title
+            }
+          end
+          expect(subject[:comments]).to match_array(expected_results)
         end
       end
     end
@@ -201,9 +203,7 @@ describe 'Feed endpoints', type: :request do
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
-    let!(:comment) do
-      FactoryGirl.create :content, :comment, parent_id: talk.id
-    end
+    let!(:comment) { FactoryGirl.create :comment, content: talk }
 
     context 'news content' do
       let(:do_request) do

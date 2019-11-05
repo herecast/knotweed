@@ -25,20 +25,6 @@ RSpec.describe CommentsController, type: :controller do
         expect(request.session['comment_search']).to be nil
       end
     end
-
-    context 'with search params' do
-      let(:params) { { q: { parent_id_eq: nil, authors_cont: nil } } }
-
-      it 'should set channel type' do
-        subject
-        expect(request.session['comment_search']['channel_type_eq']).to be 'Comment'
-      end
-
-      it 'should set parent_id_not_null' do
-        subject
-        expect(request.session['comment_search']['parent_id_not_null']).to be 1
-      end
-    end
   end
 
   describe 'PUT #update' do
@@ -46,22 +32,22 @@ RSpec.describe CommentsController, type: :controller do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
                                     deleted_at: Date.yesterday,
-                                    parent_id: @parent_content.id
+                                    content_id: @parent_content.id
     end
 
-    subject { put :update, params: { id: @comment.content.id } }
+    subject { put :update, params: { id: @comment.id } }
 
     it 'updates deleted_at to nil' do
       expect { subject }.to change {
-        @comment.content.reload.deleted_at
+        @comment.reload.deleted_at
       }.to nil
     end
 
     it 'increase comment numbers on parent' do
       expect { subject }.to change {
-        @comment.parent.reload.comment_count
+        @comment.content.reload.comment_count
       }.by(1).and change {
-        @comment.parent.reload.commenter_count
+        @comment.content.reload.commenter_count
       }.by(1)
     end
   end
@@ -71,7 +57,7 @@ RSpec.describe CommentsController, type: :controller do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
                                     deleted_at: nil,
-                                    parent_id: @parent_content.id
+                                    content_id: @parent_content.id
       mailer = double(deliver_later: true)
       allow(CommentAlertMailer).to receive(:alert_parent_content_owner).and_return(
         mailer
@@ -81,31 +67,31 @@ RSpec.describe CommentsController, type: :controller do
       )
     end
 
-    subject { delete :destroy, params: { id: @comment.content.id } }
+    subject { delete :destroy, params: { id: @comment.id } }
 
     it 'updates deleted_at to current time' do
       subject
-      expect(@comment.content.reload.deleted_at).not_to be_nil
+      expect(@comment.reload.deleted_at).not_to be_nil
     end
 
     it 'decrease comment numbers on parent' do
       expect { subject }.to change {
-        @comment.parent.reload.comment_count
+        @comment.content.reload.comment_count
       }.by(-1).and change {
-        @comment.parent.reload.commenter_count
+        @comment.content.reload.commenter_count
       }.by(-1)
     end
 
     it 'queues email to parent content owner' do
       expect(CommentAlertMailer).to receive(:alert_parent_content_owner).with(
-        @comment.content, @parent_content, true
+        @comment, @parent_content, true
       )
       subject
     end
 
     it 'queues email to comment creator' do
       expect(ContentRemovalAlertMailer).to receive(:content_removal_alert).with(
-        @comment.content
+        @comment
       )
       subject
     end

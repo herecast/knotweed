@@ -17,12 +17,18 @@ module SearchIndexing
                :removed,
                :root_parent_id,
                :has_future_event_instance,
-               :organization_order_moment
+               :organization_order_moment,
+               :commented_on_by_ids
 
     has_many :comments, serializer: Api::V3::CommentSerializer
 
     def comments
       object.abridged_comments
+    end
+
+    # user IDs who have commented on this content
+    def commented_on_by_ids
+      object.abridged_comments.map(&:created_by_id)
     end
 
     def content_category_name

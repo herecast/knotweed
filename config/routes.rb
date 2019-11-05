@@ -85,6 +85,7 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v3, defaults: { format: 'json' } do
+      post '/moderations', to: 'moderations#create'
       post '/users/logout',              to: 'users/sessions#destroy', as: :logout
       get  '/user',                      to: 'users#index'
       post '/users/email_confirmation',  to: 'users/confirmations#create', as: :email_confirmation
@@ -116,8 +117,6 @@ Rails.application.routes.draw do
       end
 
       get '/casters/:id', to: 'casters#show'
-     
-      post '/contents/:content_id/moderate', to: 'contents/moderations#create'
 
       get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, defaults: { format: 'html' }
 

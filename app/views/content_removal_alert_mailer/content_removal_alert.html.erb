@@ -655,7 +655,7 @@ Hi <%= @content.created_by.name %>,<br><br>
 
 Your&nbsp;
 <% if @content_type == 'comment' %>
-	comment "<%= strip_tags(@content.content) %>"
+	comment "<%= strip_tags(@content.sanitized_content) %>"
 <% else %>
 	post "<%= @content.title %>"
 <% end %>

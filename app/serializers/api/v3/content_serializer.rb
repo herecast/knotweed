@@ -196,7 +196,7 @@ module Api
 
       def commenter_count
         if object.parent.present?
-          object.parent_commenter_count
+          object.parent.commenter_count
         else
           object.commenter_count
         end
@@ -204,7 +204,7 @@ module Api
 
       def comment_count
         if object.parent.present?
-          object.parent_comment_count
+          object.parent.comment_count
         else
           object.comment_count
         end

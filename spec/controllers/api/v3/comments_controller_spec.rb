@@ -11,39 +11,18 @@ describe Api::V3::CommentsController, type: :controller do
     end
 
     describe 'given content_id' do
-      before do
-        user = FactoryGirl.create :user
-        @content = FactoryGirl.create :content, created_by: user
-        @comment = FactoryGirl.create :comment
-        @comment.content.update_attribute :parent_id, @content.id
-      end
+      let(:content) { FactoryGirl.create :content }
+      let!(:comment) { FactoryGirl.create :comment, content: content }
 
-      subject { get :index, format: :json, params: { content_id: @content.id } }
+      subject { get :index, format: :json, params: { content_id: content.id } }
 
       it 'should return the coments associated' do
         subject
-        expect(assigns(:comments)).to eq([@comment.content])
-      end
-
-      context 'when the root content is a talk item' do
-        before do
-          user = FactoryGirl.create :user
-          @content = FactoryGirl.create :content, :talk, created_by: user
-          @comment_content = FactoryGirl.create :content, :located, :comment
-          @talk_comment = FactoryGirl.create :comment, content: @comment_content
-          @talk_comment.content.update_attributes(parent_id: @content.id)
-        end
-
-        it 'returns the correct comments for the root content' do
-          subject
-          expect(assigns(:comments)).to eq([@talk_comment.content])
-        end
+        expect(assigns(:comments)).to match_array([comment])
       end
 
       context 'when content is removed' do
-        before do
-          @content.update_attribute(:removed, true)
-        end
+        let(:content) { FactoryGirl.create :content, removed: true }
 
         it 'returns empty array' do
           subject
@@ -53,61 +32,29 @@ describe Api::V3::CommentsController, type: :controller do
     end
 
     describe 'ordered by pubdate DESC' do
-      before do
-        @event = FactoryGirl.create :event
-        @comment1 = FactoryGirl.create :comment,
-          pubdate: Time.parse('2014-01-01'),
-          created_by: FactoryGirl.create(:user),
-          parent: @event.content
-        @comment2 = FactoryGirl.create :comment,
-          pubdate: Time.parse('2014-02-01'),
-          created_by: FactoryGirl.create(:user),
-          parent: @event.content
-        @comment3 = FactoryGirl.create :comment,
-          pubdate: Time.parse('2014-03-01'),
-          parent: @event.content,
-          created_by: FactoryGirl.create(:user)
-      end
-
-      subject! { get :index, format: :json, params: { content_id: @event.content.id } }
+      let(:content) { FactoryGirl.create :content }
+      let!(:comment1) { FactoryGirl.create :comment, content: content,
+                        pubdate: 1.week.ago }
+      let!(:comment2) { FactoryGirl.create :comment, content: content,
+                        pubdate: 2.weeks.ago }
+      let!(:comment3) { FactoryGirl.create :comment, content: content,
+                        pubdate: 3.weeks.ago }
+      subject! { get :index, format: :json, params: { content_id: content.id } }
 
       it 'should return ordered results' do
-        expected = { comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)] }.stringify_keys
-        expect(JSON.parse(response.body)).to eq(expected)
-      end
-    end
-
-    describe 'when avatar is present' do
-      before do
-        google_logo_stub
-        user = FactoryGirl.create :user
-        @content = FactoryGirl.create :content
-        @comment = FactoryGirl.create :comment
-        @comment.content.update parent_id: @content.id, created_by: user
-        allow(user).to receive(:avatar_url).and_return(
-          'https://www.google.com/images/srpr/logo11w.png'
-        )
-      end
-
-      subject! { get :index, format: :json, params: { content_id: @content.id } }
-
-      it 'should include avatar url in the response' do
-        expect(JSON.parse(response.body)).to eq({ comments: [comment_format(@comment)] }.stringify_keys)
+        expect(assigns(:comments)).to match_array([comment1, comment2, comment3])
       end
     end
   end
 
   describe 'POST create' do
-    before do
-      @parent_user = FactoryGirl.create :user, receive_comment_alerts: true
-      @commenting_user = FactoryGirl.create :user
-      @event_content = FactoryGirl.create :content, :located, created_by: @parent_user
-      @event = FactoryGirl.create :event, content: @event_content
-      api_authenticate user: @commenting_user
-      FactoryGirl.create :organization, :default
-    end
+    let(:content_user) { FactoryGirl.create :user, receive_comment_alerts: true }
+    let(:comment_user) { FactoryGirl.create :user }
+    let(:content) { FactoryGirl.create :content, created_by: content_user }
 
-    subject { post :create, params: { comment: { content: 'fake', parent_id: @event.content.id } } }
+    before { api_authenticate user: comment_user }
+
+    subject { post :create, params: { comment: { content: 'fake', parent_id: content.id } } }
 
     context 'should not allow creation if user unauthorized' do
       before { api_authenticate success: false }
@@ -116,11 +63,6 @@ describe Api::V3::CommentsController, type: :controller do
         expect(response.code).to eq('401')
         expect(Comment.count).to eq(0)
       end
-    end
-
-    it 'sets the origin to UGC' do
-      subject
-      expect(assigns(:comment).content.origin).to eql Content::UGC_ORIGIN
     end
 
     it 'fires CommentAlert process to send email alert' do
@@ -133,14 +75,12 @@ describe Api::V3::CommentsController, type: :controller do
     end
 
     context 'when comment contains HTML tags' do
-      before do
-        @allowed_content = 'Hi this is allowed'
-      end
+      let(:allowed_content) { 'Hi this is allowed' }
 
       let(:comment_params) do
         {
-          content: "<div><p><span style='color: red'>#{@allowed_content}</span></p></div>",
-          parent_content_id: @event.content.id
+          content: "<div><p><span style='color: red'>#{allowed_content}</span></p></div>",
+          parent_content_id: content.id
         }
       end
 
@@ -148,25 +88,9 @@ describe Api::V3::CommentsController, type: :controller do
 
       it 'strips HTML tags from comment' do
         subject
-        expect(Content.last.raw_content).to eq @allowed_content
+        expect(Comment.last.raw_content).to eq allowed_content
       end
     end
   end
 
-  private
-
-  def comment_format(comment)
-    # r means results
-    r = {}
-    r[:id] = comment.channel.id
-    r[:content] = comment.sanitized_content
-    r[:caster_id] = comment.created_by.id
-    r[:caster_name] = comment.created_by.name
-    r[:caster_handle] = comment.created_by.handle
-    r[:caster_avatar_image_url] = comment.created_by.try(:avatar).try(:url)
-    r[:published_at] = comment.pubdate.iso8601
-    r[:parent_id] = comment.parent_id
-    r[:content_id] = comment.content.id
-    r.stringify_keys
-  end
 end

@@ -11,7 +11,6 @@ module Api
         if root.present? && root.removed == false
           @comments = root.comments
                           .not_deleted
-                          .not_removed
                           .order(pubdate: :desc)
           render json: @comments, each_serializer: CommentSerializer
         else
@@ -24,10 +23,10 @@ module Api
         @comment = Comment.new(comment_params)
         if @comment.save
           CommentAlert.call(@comment)
-          render json: @comment.content,
-                 serializer: CommentSerializer,
-                 root: 'comment',
-                 status: 201
+          render json: @comment,
+            serializer: CommentSerializer,
+            status: 201,
+            root: 'comment'
         else
           render json: {}, status: :unprocessable_entity
         end
@@ -39,12 +38,10 @@ module Api
         new_params = params
         new_params[:comment] = new_params[:comment].merge(additional_attributes)
         new_params.require(:comment).permit(
-          content_attributes: %i[
-            created_by_id
-            parent_id
+          %i[
+            content_id
             raw_content
             pubdate
-            content_category
             location_id
             origin
           ]
@@ -53,15 +50,9 @@ module Api
 
       def additional_attributes
         {
-          content_attributes: {
-            created_by_id: current_user.id,
-            parent_id: params[:comment][:parent_id],
-            raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
-            pubdate: Time.zone.now,
-            content_category: 'talk_of_the_town',
-            location_id: current_user.location_id,
-            origin: Content::UGC_ORIGIN
-          }
+          content_id: params[:comment][:parent_id],
+          raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
+          pubdate: Time.zone.now,
         }
       end
     end

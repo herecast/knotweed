@@ -5,10 +5,6 @@ class ContentSearch
     new(*args).standard_query
   end
 
-  def self.comment_query(*args)
-    new(*args).comment_query
-  end
-
   def self.caster_follows_query(*args)
     new(*args).caster_follows_query
   end
@@ -19,6 +15,10 @@ class ContentSearch
 
   def self.calendar_query(*args)
     new(*args).calendar_query
+  end
+
+  def self.comment_query(*args)
+    new(*args).comment_query
   end
 
   def initialize(params:, current_user: nil)
@@ -34,6 +34,13 @@ class ContentSearch
       conditionally_add_location_opts(attrs)
       conditionally_update_boost_for_query(attrs)
       conditionally_guard_from_future_latest_activity(attrs)
+    end
+  end
+
+  # returns content that has been commented on by the current user
+  def comment_query
+    standard_opts.tap do |attrs|
+      attrs[:where][:commented_on_by_ids] = { in: @current_user.id }
     end
   end
 
@@ -63,15 +70,6 @@ class ContentSearch
       following_ids = @current_user.caster_follows.map(&:caster_id).flatten
       attrs[:where][:created_by_id] = following_ids
       attrs[:where].delete(:location_id)
-    end
-  end
-
-  def comment_query
-    standard_opts.tap do |attrs|
-      attrs[:where].delete(:pubdate)
-      attrs[:where][:content_type] = 'comment'
-      attrs[:where][:created_by_id] = @params[:id]
-      attrs[:where][:deleted] = false
     end
   end
 

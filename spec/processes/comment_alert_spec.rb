@@ -6,14 +6,12 @@ RSpec.describe CommentAlert do
   let(:org) { FactoryGirl.create :organization, name: 'Listserv' }
   let(:parent_content_owner) { FactoryGirl.create :user, receive_comment_alerts: true }
   let(:parent_content) { FactoryGirl.create :content, :talk, created_by: parent_content_owner }
-  let(:comment1) { FactoryGirl.build :content, :talk, parent_id: parent_content.id }
+  let(:comment1) { FactoryGirl.build :comment, content_id: parent_content.id }
   let(:no_alert_content_owner) { FactoryGirl.create :user, receive_comment_alerts: false }
   let(:no_alert_content) { FactoryGirl.create :content, :talk, created_by: no_alert_content_owner }
-  let(:comment2) { FactoryGirl.create :content, :talk, parent_id: no_alert_content.id }
-  let(:author_comment) { FactoryGirl.create :content, :talk, created_by: parent_content_owner }
-  let(:no_owner_content) { FactoryGirl.create :content, :talk, created_by: nil }
-
-  subject { described_class.call(comment, parent_content) }
+  let(:comment2) { FactoryGirl.create :comment, content_id: no_alert_content.id }
+  let(:author_comment) { FactoryGirl.create :comment, created_by: parent_content_owner, content: no_owner_content }
+  let(:no_owner_content) { FactoryGirl.create :content, created_by: nil }
 
   context 'when content is not a comment' do
     it 'does not send an email alert' do
@@ -30,7 +28,7 @@ RSpec.describe CommentAlert do
       CommentAlert.call(comment1)
     end
 
-    context 'when user has receive_comment_alerts = false' do
+    context 'when user has receive_comment_alerts = false'  do
       it 'does not send an email to the parent content owner' do
         expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(comment2, no_alert_content)
         CommentAlert.call(comment2)

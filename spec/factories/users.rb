@@ -69,7 +69,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :user do
+  factory :user, aliases: [:created_by] do
     name Faker::Name.name
     fullname Faker::Name.name
     sequence(:email) { |n| "email#{n}@test.com" }

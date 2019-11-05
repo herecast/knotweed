@@ -9,13 +9,13 @@ class HashieMashSerializer < ActiveModel::Serializer
   def self.attributes(*attrs)
     attrs.each do |attr|
       # use send because strip_attribute is private in the parent class
-      striped_attr = send :strip_attribute, attr
+      stripped_attr = send :strip_attribute, attr
 
-      @_attributes << striped_attr
+      @_attributes << stripped_attr
 
       next if method_defined?(attr)
 
-      define_method striped_attr do
+      define_method stripped_attr do
         if object.key?(attr)
           object[attr]
         else

@@ -6,9 +6,10 @@ module Api
 
       def index
         if params[:commented] == 'true'
-          comment_search_opts = ContentSearch.comment_query(params: params)
-          commented_contents = Content.search(comment_search_opts)
-          search_opts = { load: false, where: { id: commented_contents.map(&:parent_id).uniq } }
+          search_opts = ContentSearch.comment_query(
+            params: params,
+            current_user: current_user
+          )
         elsif params[:caster_feed] == 'true'
           search_opts = ContentSearch.caster_follows_query(
             params: params.merge(caster: true),

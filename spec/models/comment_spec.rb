@@ -1,174 +1,115 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: comments
 #
-#  id         :bigint(8)        not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id            :bigint(8)        not null, primary key
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  raw_content   :text
+#  pubdate       :datetime
+#  content_id    :bigint(8)
+#  location_id   :bigint(8)
+#  created_by_id :bigint(8)
+#  updated_by_id :bigint(8)
+#
+# Indexes
+#
+#  index_comments_on_content_id     (content_id)
+#  index_comments_on_created_by_id  (created_by_id)
+#  index_comments_on_location_id    (location_id)
+#  index_comments_on_updated_by_id  (updated_by_id)
 #
 
 require 'spec_helper'
 
 describe Comment, type: :model do
-  before do
-    @content = FactoryGirl.create :content, pubdate: 1.day.ago
-    @comment = FactoryGirl.create :comment, content: @content
-  end
+  let(:content) { FactoryGirl.create :content, pubdate: 1.day.ago }
+  let!(:comment) { FactoryGirl.create :comment, content: content }
 
-  describe 'method missing override' do
-    it 'should allow access to content attributes directly' do
-      expect(@comment.title).to eq(@content.title)
-      expect(@comment.authors).to eq(@content.authors)
-      expect(@comment.pubdate).to eq(@content.pubdate)
+  # this is normally called as an `after_create` callback but we are just testing
+  # method functionality here
+  describe '#increase_comment_stats' do
+    subject { comment.increase_comment_stats }
+
+    it 'should increase contents.comment_count' do
+      expect{subject}.to change{ content.comment_count }.by(1)
     end
 
-    it 'should retain normal method_missing behavior if not a content attribute' do
-      expect { @comment.asdfdas }.to raise_error(NoMethodError)
-    end
-  end
+    describe 'when a new user comments' do
+      let(:new_user) { FactoryGirl.create :user }
+      before { comment.update created_by: new_user }
 
-  describe 'after_save' do
-    it 'should also save the associated content record' do
-      @content.title = 'Changed Title'
-      @comment.save # should trigger @content.save callback
-      expect(@content.reload.title).to eq 'Changed Title'
-    end
-  end
-
-  describe 'after_create' do
-    before do
-      @parent = FactoryGirl.create :content, pubdate: 1.week.ago
-      @user = FactoryGirl.create :admin
-    end
-
-    it 'should increase the counter comments' do
-      @content.parent = @parent
-      @content.save
-      count = @parent.comment_count
-      FactoryGirl.create :comment, content: @content
-      @parent.reload
-      expect(@parent.comment_count).to eq(count + 1)
-    end
-
-    it 'should increase the counter commenters' do
-      User.current = @user
-      count = @parent.commenter_count
-      @content = FactoryGirl.create :content
-      @content.parent = @parent
-      @content.save
-      FactoryGirl.create :comment, content: @content
-      @parent.reload
-      expect(@parent.commenter_count).to eq(count + 1)
-    end
-
-    it 'should not increase the counter commenters, if same user' do
-      count = @parent.commenter_count
-      @content = FactoryGirl.create :content, created_by: @user
-      @content.parent = @parent
-      @content.save
-
-      @content = FactoryGirl.create :content, created_by: @user
-      @content.parent = @parent
-      @content.save
-      FactoryGirl.create :comment, content: @content
-      @parent.reload
-      expect(@parent.commenter_count).to eq(count)
-    end
-
-    context 'when parent content is less than one week old' do
-      subject do
-        FactoryGirl.create :content, :comment,
-                           parent_id: @content.id
-      end
-
-      it 'updates parent content latest_activity' do
-        Timecop.freeze do
-          expect { subject }.to change {
-            @content.reload.latest_activity
-          }
-        end
-      end
-
-      context 'when parent content is an Event' do
-        before do
-          @event = FactoryGirl.create :content, :event,
-                                      pubdate: 1.day.ago,
-                                      latest_activity: 1.day.ago
-        end
-
-        subject do
-          FactoryGirl.create :content, :comment,
-                             parent_id: @event.id
-        end
-
-        it 'does not update latest_activity' do
-          expect { subject }.not_to change {
-            @event.reload.latest_activity
-          }
-        end
+      it 'should increase contents.commenter_count' do
+        expect{subject}.to change{ content.commenter_count }.by(1)
       end
     end
 
-    context 'when parent content is less than one week old' do
-      subject do
-        FactoryGirl.create :content, :comment,
-                           parent_id: @content.id
-      end
+    describe 'when the same user comments' do
+      let(:new_comment) { FactoryGirl.create :comment, content: content, created_by: comment.created_by }
 
-      it 'updates parent content latest_activity' do
-        Timecop.freeze(Time.current + 8.day) do
-          expect { subject }.not_to change {
-            @content.reload.latest_activity
-          }
-        end
+      it 'should not increase contents.commenter_count' do
+        expect{new_comment.increase_comment_stats}.not_to change{ content.commenter_count }
+      end
+    end
+
+    describe 'when content is an event' do
+      let(:event) { FactoryGirl.create :event, pubdate: 1.week.ago }
+      let!(:comment) { FactoryGirl.create :comment, content: event.content }
+      
+      it 'should not update latest_activity' do
+        expect{subject}.not_to change{ event.content.latest_activity }
+      end
+    end
+
+    describe 'when content is less than a week old' do
+      let(:content) { FactoryGirl.create :content, pubdate: 1.day.ago }
+
+      it 'should update latest_activity' do
+        expect{subject}.to change{ content.latest_activity }
+      end
+    end
+
+    describe 'when content is older than 1 week' do
+      let(:content) { FactoryGirl.create :content, pubdate: 2.weeks.ago }
+
+      it 'should not update latest_activity' do
+        expect{subject}.not_to change{ content.latest_activity }
       end
     end
   end
 
   describe '#decrease_comment_stats' do
-    before do
-      @user = FactoryGirl.create :user
-      @parent_content = FactoryGirl.create :content
-      @comment = FactoryGirl.create :comment,
-                                    deleted_at: Date.yesterday
-      @comment.content.update_attributes!(
-        parent_id: @parent_content.id,
-        created_by: @user
-      )
+    let(:content) { FactoryGirl.create :content }
+    let!(:comment) { FactoryGirl.create :comment, content: content }
+
+    subject { comment.decrease_comment_stats }
+
+    it 'should reduce content.comment_count by 1' do
+      expect{subject}.to change{ content.comment_count }.by(-1)
     end
 
-    context 'when deleted comment auther has only written one comment on article' do
-      subject { @comment.decrease_comment_stats }
-
-      it 'decreases parent comment_count and commenter_count' do
-        expect { subject }.to change {
-          @comment.parent.reload.comment_count
-        }.by(-1).and change {
-          @comment.parent.reload.commenter_count
-        }.by(-1)
-      end
-    end
-
-    context 'when deleted comment auther has written multiple comments on article' do
+    describe 'when the same user has other comments' do
+      let(:user) { FactoryGirl.create :user }
       before do
-        @comment_two = FactoryGirl.create :comment
-        @comment_two.content.update_attributes!(
-          parent_id: @parent_content.id,
-          created_by: @user
-        )
+        comment.update created_by: user
+        User.current = comment.created_by # set created_by to same author as original comment
       end
+      let(:new_comment) { FactoryGirl.create :comment, content: content }
 
-      subject { @comment.decrease_comment_stats }
-
-      it 'decreases parent comment_count but not commenter_count' do
-        expect { subject }.to change {
-          @comment.parent.reload.comment_count
-        }.by(-1).and change {
-          @comment.parent.reload.commenter_count
-        }.by(0)
+      it 'should not reduce content.comment_count' do
+        expect{new_comment.decrease_comment_stats}.not_to change{ content.comment_count }
       end
+    end
+  end
+
+  describe 'after_commit', elasticsearch: true do
+    let!(:content) { FactoryGirl.create :content }
+    let!(:comment) { FactoryGirl.create :comment, content: content }
+
+    it 'should reindex the related content' do
+      expect(content).to receive(:reindex)
+      comment.update raw_content: 'Just triggering a commit'
     end
   end
 end

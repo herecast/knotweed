@@ -6,9 +6,11 @@ RSpec.describe CommentAlertMailer do
   describe '.alert_parent_content_owner' do
     let(:parent_owner) { FactoryGirl.create :user }
     let(:comment_owner) { FactoryGirl.create :user }
-    let(:commented_on_content) { FactoryGirl.create :content }
     let(:parent_content) { FactoryGirl.create :content, :talk, created_by: parent_owner }
-    let(:comment) { FactoryGirl.create :comment, content: parent_content, parent_id: commented_on_content.id }
+    let(:comment) do
+      FactoryGirl.create :comment, content: parent_content, created_by: comment_owner,
+        raw_content: 'THIS IS UNIQUE COMMENT BLARGH'
+    end
 
     subject { described_class.alert_parent_content_owner(comment, parent_content).deliver_now }
 
@@ -40,13 +42,22 @@ RSpec.describe CommentAlertMailer do
         expect(subject.body).to include "<a href=\"mailto:help@herecast.us?body=Please%20unsubscribe%20this%20user%20from%20future%20comment%20alerts%3A%20http%3A%2F%2F198.74.61.63%3A8002%2Fadmin%2Fusers%2F#{parent_owner.id}%2Fedit&amp;subject=Unsubscribe%20from%20comment%20alerts\">click here to unsubscribe.</a>"
       end
 
-      context 'when comment_hidden: false' do
-        subject { described_class.alert_parent_content_owner(parent_content, commented_on_content, true) }
+      context 'when comment_hidden: true' do
+        subject { described_class.alert_parent_content_owner(comment, parent_content, true) }
 
         it 'contains comment text' do
-          expect(subject.body).to include parent_content.content
+          expect(subject.body).to include comment.sanitized_content
         end
       end
+
+      context 'when comment_hidden: false' do
+        subject { described_class.alert_parent_content_owner(comment, parent_content, false) }
+
+        it 'does not contain comment text' do
+          expect(subject.body).not_to include comment.sanitized_content
+        end
+      end
+
     end
   end
 end

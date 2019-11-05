@@ -195,11 +195,8 @@ class Content < ActiveRecord::Base
 
   belongs_to :parent, class_name: 'Content'
   belongs_to :root_parent, class_name: name
-  delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
   has_many :children, class_name: 'Content', foreign_key: 'parent_id'
-  has_many :comments, lambda {
-    where('channel_type = ?', 'Comment')
-  }, class_name: 'Content', foreign_key: 'parent_id'
+  has_many :comments
 
   has_many :promotions
   has_many :user_bookmarks
@@ -238,7 +235,6 @@ class Content < ActiveRecord::Base
 
   scope :not_deleted, -> { where(deleted_at: nil) }
   scope :not_removed, -> { where(removed: false) }
-  scope :not_comment, -> { where(parent_id: nil) }
   scope :only_categories, lambda { |names| where('content_category IN (?)', names) }
 
   scope :ad_campaign_active, lambda { |date = Date.current|
@@ -301,9 +297,7 @@ class Content < ActiveRecord::Base
   end
 
   def content_type
-    if parent_id.present? and channel_type == 'Comment'
-      'comment'
-    elsif content_category == 'talk_of_the_town'
+    if content_category == 'talk_of_the_town'
       'talk'
     else
       content_category
@@ -451,7 +445,7 @@ class Content < ActiveRecord::Base
     if content_category == 'campaign'
       promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
     elsif parent.present?
-      parent_view_count
+      parent.view_count
     else
       view_count
     end
@@ -467,7 +461,7 @@ class Content < ActiveRecord::Base
   end
 
   def abridged_comments
-    children.where('pubdate IS NOT NULL AND deleted_at IS NULL')
+    comments.where('pubdate IS NOT NULL AND deleted_at IS NULL')
             .order(pubdate: :desc)
             .take(6)
   end

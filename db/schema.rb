@@ -78,6 +78,17 @@ ActiveRecord::Schema.define(version: 20191030170642) do
   create_table 'comments', id: :bigserial, force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.text "raw_content"
+    t.datetime "pubdate"
+    t.datetime "deleted_at"
+    t.bigint "content_id"
+    t.bigint "location_id"
+    t.bigint "created_by_id"
+    t.bigint "updated_by_id"
+    t.index ["content_id"], name: "index_comments_on_content_id"
+    t.index ["created_by_id"], name: "index_comments_on_created_by_id"
+    t.index ["location_id"], name: "index_comments_on_location_id"
+    t.index ["updated_by_id"], name: "index_comments_on_updated_by_id"
   end
 
   create_table 'content_metrics', force: :cascade do |t|
@@ -804,6 +815,5 @@ ActiveRecord::Schema.define(version: 20191030170642) do
   add_foreign_key 'social_logins', 'users'
   add_foreign_key 'subscriptions', 'listservs'
   add_foreign_key 'subscriptions', 'users'
-  add_foreign_key 'user_bookmarks', 'contents'
   add_foreign_key 'user_bookmarks', 'users'
 end

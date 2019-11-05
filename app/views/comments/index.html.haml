@@ -13,11 +13,11 @@
       = search_form_for @search, url: comments_path do |f|
         .controls.controls-row
           .field.span2
-            = f.label :parent_id_eq, "Parent Content ID"
-            = f.text_field :parent_id_eq, class: "span12"
+            = f.label :content_id_eq, "Parent Content ID"
+            = f.text_field :content_id_eq, class: "span12"
           .field.span4
-            = f.label :authors_cont, "Author"
-            = f.text_field :authors_cont, class: "span12"
+            = f.label :created_by_name_cont, "Author"
+            = f.text_field :created_by_name_cont, class: "span12"
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -37,8 +37,8 @@
     - @comments.each do |c|
       %tr
         %td= c.id
-        %td= c.parent_id
-        %td= c.authors
+        %td= c.content_id
+        %td= c.created_by.try(:name)
         %td= sanitize_comment_content(c.sanitized_content)
         %td= link_to 'See User', c.created_by, class: 'btn btn-mini btn-success'
         %td

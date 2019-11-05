@@ -6,35 +6,33 @@ class CommentsController < ApplicationController
       session[:comment_search] = nil
     elsif params[:q].present?
       params[:q] ||= {}
-      params[:q][:channel_type_eq] = 'Comment'
-      params[:q][:parent_id_not_null] = 1
       session[:comment_search] = params[:q]
     end
 
-    @search = Content.ransack(session[:comment_search])
+    @search = Comment.ransack(session[:comment_search])
 
     @comments = if session[:comment_search].present?
                   @search.result(distinct: true)
                          .order('created_at DESC')
                          .page(params[:page])
-                         .per(25)
+                         .per(25).includes(:created_by)
                 else
                   []
                 end
   end
 
   def update
-    @comment = Content.find(params[:id])
+    @comment = Comment.find(params[:id])
     @comment.update_attribute(:deleted_at, nil)
-    @comment.channel.increase_comment_stats
+    @comment.increase_comment_stats
     flash[:info] = 'Comment Unhidden'
     redirect_to correct_path
   end
 
   def destroy
-    @comment = Content.find(params[:id])
+    @comment = Comment.find(params[:id])
     @comment.update_attribute(:deleted_at, Time.now)
-    @comment.channel.decrease_comment_stats
+    @comment.decrease_comment_stats
     notify_comment_owner
     notify_parent_content_owner
     flash[:info] = 'Comment Hidden'
@@ -53,7 +51,7 @@ class CommentsController < ApplicationController
 
   def notify_parent_content_owner
     CommentAlertMailer.alert_parent_content_owner(
-      @comment, @comment.parent, true
+      @comment, @comment.content, true
     ).deliver_later
   end
 end
