@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191030170642) do
+ActiveRecord::Schema.define(version: 20191105183746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -690,19 +690,13 @@ ActiveRecord::Schema.define(version: 20191030170642) do
     t.datetime 'confirmed_at'
     t.datetime 'confirmation_sent_at'
     t.string   'unconfirmed_email', limit: 255
-    t.datetime 'nda_agreed_at'
-    t.boolean  'agreed_to_nda', default: false
     t.string   'contact_phone',          limit: 255
     t.string   'contact_email',          limit: 255
-    t.string   'contact_url',            limit: 255
     t.bigint   'location_id'
-    t.string   'test_group', limit: 255, default: 'consumer'
-    t.boolean  'muted', default: false
     t.string   'authentication_token',   limit: 255
     t.string   'avatar',                 limit: 255
     t.string   'public_id',              limit: 255
     t.boolean  'skip_analytics', default: false
-    t.string   'temp_password'
     t.boolean  'archived', default: false
     t.string   'source'
     t.boolean  'receive_comment_alerts',             default: true

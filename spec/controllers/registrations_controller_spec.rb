@@ -30,12 +30,6 @@ describe RegistrationsController, type: :controller do
         expect(response).to be_successful
       end
 
-      it 'should set NDA fields' do
-        subject
-        expect(user.nda_agreed_at.present?).to be true
-        expect(user.agreed_to_nda).to be true
-      end
-
       it 'should not respond with authentication token' do
         subject
         expect(JSON.parse(response.body)).to_not eq(

@@ -10,7 +10,6 @@ module Api
                  :location,
                  :listserv_id,
                  :listserv_name,
-                 :test_group,
                  :user_image_url,
                  :skip_analytics,
                  :location_confirmed,

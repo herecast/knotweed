@@ -22,19 +22,13 @@
 #  confirmed_at                     :datetime
 #  confirmation_sent_at             :datetime
 #  unconfirmed_email                :string(255)
-#  nda_agreed_at                    :datetime
-#  agreed_to_nda                    :boolean          default(FALSE)
 #  contact_phone                    :string(255)
 #  contact_email                    :string(255)
-#  contact_url                      :string(255)
 #  location_id                      :bigint(8)
-#  test_group                       :string(255)      default("consumer")
-#  muted                            :boolean          default(FALSE)
 #  authentication_token             :string(255)
 #  avatar                           :string(255)
 #  public_id                        :string(255)
 #  skip_analytics                   :boolean          default(FALSE)
-#  temp_password                    :string
 #  archived                         :boolean          default(FALSE)
 #  source                           :string
 #  receive_comment_alerts           :boolean          default(TRUE)

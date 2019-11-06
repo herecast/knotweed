@@ -22,19 +22,13 @@
 #  confirmed_at                     :datetime
 #  confirmation_sent_at             :datetime
 #  unconfirmed_email                :string(255)
-#  nda_agreed_at                    :datetime
-#  agreed_to_nda                    :boolean          default(FALSE)
 #  contact_phone                    :string(255)
 #  contact_email                    :string(255)
-#  contact_url                      :string(255)
 #  location_id                      :bigint(8)
-#  test_group                       :string(255)      default("consumer")
-#  muted                            :boolean          default(FALSE)
 #  authentication_token             :string(255)
 #  avatar                           :string(255)
 #  public_id                        :string(255)
 #  skip_analytics                   :boolean          default(FALSE)
-#  temp_password                    :string
 #  archived                         :boolean          default(FALSE)
 #  source                           :string
 #  receive_comment_alerts           :boolean          default(TRUE)
@@ -69,7 +63,6 @@
 require 'spec_helper'
 
 describe User, type: :model do
-  it { is_expected.to respond_to(:temp_password, :temp_password=) }
   it { is_expected.to have_db_column(:location_confirmed).of_type(:boolean) }
 
   before(:each) do
@@ -375,8 +368,6 @@ describe User, type: :model do
           user = User.from_facebook_oauth(facebook_response, reg_attributes)
           expect(user.name).to eq facebook_response[:name]
           expect(user.email).to eq facebook_response[:email]
-          expect(user.nda_agreed_at).to_not be_nil
-          expect(user.agreed_to_nda).to eq true
           expect(user.location).to eq location
         end
 

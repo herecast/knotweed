@@ -22,19 +22,13 @@
 #  confirmed_at                     :datetime
 #  confirmation_sent_at             :datetime
 #  unconfirmed_email                :string(255)
-#  nda_agreed_at                    :datetime
-#  agreed_to_nda                    :boolean          default(FALSE)
 #  contact_phone                    :string(255)
 #  contact_email                    :string(255)
-#  contact_url                      :string(255)
 #  location_id                      :bigint(8)
-#  test_group                       :string(255)      default("consumer")
-#  muted                            :boolean          default(FALSE)
 #  authentication_token             :string(255)
 #  avatar                           :string(255)
 #  public_id                        :string(255)
 #  skip_analytics                   :boolean          default(FALSE)
-#  temp_password                    :string
 #  archived                         :boolean          default(FALSE)
 #  source                           :string
 #  receive_comment_alerts           :boolean          default(TRUE)
@@ -67,7 +61,6 @@
 #
 
 class User < ActiveRecord::Base
-  has_many :report_recipients
   has_many :subscriptions
   has_many :social_logins
   has_many :user_bookmarks
@@ -93,17 +86,23 @@ class User < ActiveRecord::Base
   before_save :ensure_authentication_token
 
   rolify
-  # Include default devise modules. Others available are:
-  # :token_authenticatable, :confirmable,
-  # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :confirmable,
-         :recoverable, :rememberable, :trackable, :validatable
+
+  devise :database_authenticatable,
+         :registerable,
+         :confirmable,
+         :recoverable,
+         :rememberable,
+         :trackable,
+         :validatable
 
   validates_presence_of :location, :handle
   validates :public_id, uniqueness: true, allow_blank: true
   validates :avatar, image_minimum_size: true
 
   validates_uniqueness_of :handle, case_sensitive: false
+
+  FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
+  validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
 
   after_commit :update_subscriptions_locations,
                :trigger_content_reindex_if_content_relevant_attrs_changed,
@@ -119,9 +118,6 @@ class User < ActiveRecord::Base
     'email_is_public',
     'location_id'
   ]
-
-  FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
-  validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
 
   default_scope { order('id ASC') }
 
@@ -161,10 +157,6 @@ class User < ActiveRecord::Base
     end
     recoverable.send_reset_password_instructions if recoverable.persisted?
     recoverable
-  end
-
-  def subscribed_listserv_ids
-    subscriptions.map(&:listserv_id)
   end
 
   def active_listserv_subscription_ids
@@ -218,8 +210,6 @@ class User < ActiveRecord::Base
         email: auth[:email],
         password: Devise.friendly_token[0, 20],
         name: auth[:name],
-        nda_agreed_at: Time.zone.now,
-        agreed_to_nda: true,
         handle: registration_attributes[:handle]
       }.merge(registration_attributes))
 
@@ -234,10 +224,6 @@ class User < ActiveRecord::Base
       social_login.update_attributes(extra_info: auth[:extra_info])
       user
     end
-  end
-
-  def unique_roles
-    roles.map(&:pretty_name).uniq
   end
 
   def name_with_email
@@ -280,10 +266,6 @@ class User < ActiveRecord::Base
   def total_like_count
     content_ids = contents.pluck(:id)
     UserBookmark.where(content_id: content_ids).count
-  end
-
-  def active_follower_count
-    caster_followers.active.count
   end
 
   private

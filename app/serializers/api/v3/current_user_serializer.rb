@@ -7,7 +7,6 @@ module Api
                  :created_at,
                  :listserv_id,
                  :listserv_name,
-                 :test_group,
                  :skip_analytics,
                  :location_confirmed,
                  :has_had_bookmarks,

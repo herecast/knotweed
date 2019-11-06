@@ -9,8 +9,6 @@ class RegistrationsController < Devise::RegistrationsController
         if [true, 'true'].include?(params[:instant_signup])
           user.location_id = Location.find_by(city: 'Hartford', state: 'VT').id
           user.confirmed_at = Time.current
-          user.nda_agreed_at = Time.current
-          user.agreed_to_nda = true
           user.handle = params[:user][:handle]
           if user.save
             add_user_to_master_list(user)
@@ -23,8 +21,6 @@ class RegistrationsController < Devise::RegistrationsController
           res = {
             message: "Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder."
           }
-          user.nda_agreed_at = Time.zone.now
-          user.agreed_to_nda = true
           user.handle = params[:user][:handle]
 
           if user.save
