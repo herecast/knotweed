@@ -40,7 +40,7 @@ class ContentSearch
   # returns content that has been commented on by the current user
   def comment_query
     standard_opts.tap do |attrs|
-      attrs[:where][:commented_on_by_ids] = { in: @current_user.id }
+      attrs[:where][:commented_on_by_ids] = { in: @params[:id] }
     end
   end
 

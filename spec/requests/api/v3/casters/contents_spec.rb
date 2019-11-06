@@ -18,6 +18,9 @@ describe 'Caster Content endpoints', type: :request do
     let!(:other_comment) { FactoryGirl.create :comment, content: other_content, created_by: other_user }
     let!(:comment) { FactoryGirl.create :comment, content: content, created_by: user }
     let(:params) { { commented: true } }
+    let(:headers) { auth_headers_for(other_user) }
+
+
     it 'should return content that the user commented on' do
       subject
       expect(response_json[:feed_items].map{ |c| c[:content][:id] }).to match_array [content.id]
