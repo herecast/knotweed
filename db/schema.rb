@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191105183746) do
+ActiveRecord::Schema.define(version: 20191106175813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -473,10 +473,8 @@ ActiveRecord::Schema.define(version: 20191105183746) do
 
   create_table 'payment_recipients', force: :cascade do |t|
     t.integer  'user_id'
-    t.integer  'organization_id'
     t.datetime 'created_at',      null: false
     t.datetime 'updated_at',      null: false
-    t.index ['organization_id'], name: 'index_payment_recipients_on_organization_id', using: :btree
     t.index ['user_id'], name: 'index_payment_recipients_on_user_id', using: :btree
   end
 
@@ -798,7 +796,6 @@ ActiveRecord::Schema.define(version: 20191105183746) do
   add_foreign_key 'organization_content_tags', 'organizations'
   add_foreign_key 'organization_locations', 'locations'
   add_foreign_key 'organization_locations', 'organizations'
-  add_foreign_key 'payment_recipients', 'organizations'
   add_foreign_key 'payment_recipients', 'users'
   add_foreign_key 'payments', 'contents'
   add_foreign_key 'profile_metrics', 'contents'

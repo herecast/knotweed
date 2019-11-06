@@ -54,23 +54,23 @@ RSpec.describe PaymentRecipientsController, type: :controller do
 
   describe 'PUT #update' do
     let!(:payment_recipient) { FactoryGirl.create :payment_recipient }
-    let(:org) { FactoryGirl.create :organization }
+    let(:user) { FactoryGirl.create :user }
     let(:params) do
       { id: payment_recipient.id,
-        payment_recipient: { organization_id: org.id } }
+        payment_recipient: { user_id: user.id } }
     end
     subject { put :update, params: params, format: :js }
 
     it 'updates the record' do
-      expect { subject }.to change { payment_recipient.reload.organization }.to(org)
+      expect { subject }.to change { payment_recipient.reload.user }.to(user)
     end
 
     context 'with invalid user id' do
       let(:invalid_user) { (User.maximum(:id) || 0) + 1 }
-      let(:params) { { id: payment_recipient.id, payment_recipient: { user_id: invalid_user, organization_id: org.id } } }
+      let(:params) { { id: payment_recipient.id, payment_recipient: { user_id: invalid_user } } }
 
       it 'should not change the record' do
-        expect { subject }.not_to change { payment_recipient.reload.organization }
+        expect { subject }.not_to change { payment_recipient.reload.user }
       end
     end
   end

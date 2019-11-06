@@ -3,13 +3,12 @@
 class PaymentRecipientsController < ApplicationController
   load_and_authorize_resource except: [:index]
   def index
-    @payment_recipients = PaymentRecipient.all.includes(:user, :organization)
+    @payment_recipients = PaymentRecipient.all.includes(:user)
     @recipient_user_ids = @payment_recipients.map(&:user_id)
   end
 
   def new
     @payment_recipient.user = User.find params[:user_id]
-    @organizations = Organization.where('NOT EXISTS(SELECT * FROM payment_recipients WHERE payment_recipients.organization_id = organizations.id)')
     render partial: 'payment_recipients/partials/form', layout: false
   end
 
@@ -26,7 +25,6 @@ class PaymentRecipientsController < ApplicationController
   end
 
   def edit
-    @organizations = Organization.where('NOT EXISTS(SELECT * FROM payment_recipients WHERE payment_recipients.organization_id = organizations.id) OR id = ?', @payment_recipient.organization_id)
     render partial: 'payment_recipients/partials/form', layout: false
   end
 
@@ -54,8 +52,7 @@ class PaymentRecipientsController < ApplicationController
 
   def payment_recipient_params
     params.require(:payment_recipient).permit(
-      :user_id,
-      :organization_id
+      :user_id
     )
   end
 end

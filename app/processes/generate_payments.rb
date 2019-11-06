@@ -25,11 +25,7 @@ class GeneratePayments
   def call
     PaymentRecipient.all.each do |pr|
       promotion_metrics = []
-      promotion_metrics += if pr.organization.present?
-                             promotion_metrics_for_publisher(pr)
-                           else
-                             promotion_metrics_for_user(pr)
-                           end
+      promotion_metrics += promotion_metrics_for_user(pr)
       # adds payment hashes to @payments instance variable
       convert_promotion_metrics_to_payments(promotion_metrics, pr.user)
     end
@@ -41,23 +37,8 @@ class GeneratePayments
 
   def promotion_metrics_for_user(pr)
     promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end)
-                                             .joins(content: %i[organization created_by])
+                                             .joins(content: %i[created_by])
                                              .where('contents.created_by_id = ?', pr.user_id)
-                                             .where('organizations.pay_for_content = true')
-                                             .select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions')
-                                             .group(:content_id).order(:content_id)
-  end
-
-  def promotion_metrics_for_publisher(pr)
-    promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end)
-                                             .joins(:content)
-                                             .joins('INNER JOIN organizations o ON contents.organization_id = o.id')
-                                             .where('o.pay_for_content = true')
-                                             .where('o.name = ? OR '\
-                 '(SELECT name '\
-                 'FROM organizations '\
-                 'WHERE id = o.parent_id) = ?',
-                                                    pr.organization.name, pr.organization.name)
                                              .select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions')
                                              .group(:content_id).order(:content_id)
   end
