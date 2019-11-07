@@ -49,8 +49,7 @@ User.create!(
   confirmed_at: Time.now,
   password: 'password',
   password_confirmation: 'password',
-  location: Location.first,
-  test_group: 'subtext'
+  location: Location.first
 ).add_role(:admin)
 p 'Created admin@subtext.org admin user'
 
