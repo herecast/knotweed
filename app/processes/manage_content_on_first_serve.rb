@@ -42,7 +42,7 @@ class ManageContentOnFirstServe
   def conditionally_schedule_notification(content)
     if content.should_notify_subscribers?
       begin
-        BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
+        BackgroundJob.perform_later('Outreach::SendCasterPostNotification',
                                     'call',
                                     content)
       rescue StandardError

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Outreach::SendOrganizationPostNotification do
+RSpec.describe Outreach::SendCasterPostNotification do
   describe '::call' do
     before do
       @mc_segment_id = 'mc-nj345k'
@@ -24,7 +24,7 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
     end
 
     subject do
-      Outreach::SendOrganizationPostNotification.call(@content)
+      Outreach::SendCasterPostNotification.call(@content)
     end
 
     context 'when Caster has no subscribers' do
@@ -75,8 +75,8 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
           @content = FactoryGirl.create :content,
                                         created_by_id: caster.id,
                                         location: FactoryGirl.create(:location)
-          @max = Outreach::SendOrganizationPostNotification::MAX_SUBJECT_LENGTH
-          @subj = Outreach::SendOrganizationPostNotification.new(
+          @max = Outreach::SendCasterPostNotification::MAX_SUBJECT_LENGTH
+          @subj = Outreach::SendCasterPostNotification.new(
             @content
           ).send(:campaign_subject)
         end
@@ -86,7 +86,7 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
         end
 
         it 'truncates title' do
-          formatted_subj = Outreach::SendOrganizationPostNotification.new(
+          formatted_subj = Outreach::SendCasterPostNotification.new(
             @content
           ).send(:formatted_subject, @subj)
           expect(formatted_subj.length).to be <= @max

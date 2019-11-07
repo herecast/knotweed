@@ -17,7 +17,7 @@ module Api
       private
 
       def schedule_email_notification
-        BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
+        BackgroundJob.perform_later('Outreach::SendCasterPostNotification',
                                     'call',
                                     @content)
       end

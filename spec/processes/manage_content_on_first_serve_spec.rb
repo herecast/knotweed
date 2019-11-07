@@ -50,7 +50,7 @@ RSpec.describe ManageContentOnFirstServe do
 
           it 'calls to schedule Mailchimp post' do
             expect(BackgroundJob).to receive(:perform_later).with(
-              'Outreach::SendOrganizationPostNotification',
+              'Outreach::SendCasterPostNotification',
               'call',
               @content
             )

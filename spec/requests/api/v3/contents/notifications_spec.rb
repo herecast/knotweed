@@ -20,7 +20,7 @@ RSpec.describe 'Content Notifications Endpoints', type: :request do
 
     it 'calls to send notification' do
       expect(BackgroundJob).to receive(:perform_later).with(
-        'Outreach::SendOrganizationPostNotification',
+        'Outreach::SendCasterPostNotification',
         'call',
         @content
       )

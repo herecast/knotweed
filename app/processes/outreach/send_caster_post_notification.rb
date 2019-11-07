@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Outreach
-  class SendOrganizationPostNotification
+  class SendCasterPostNotification
     include ContentsHelper
     include EmailTemplateHelper
     include MailchimpAPI
