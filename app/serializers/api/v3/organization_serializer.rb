@@ -34,7 +34,6 @@ module Api
                  :calendar_view_first,
                  :calendar_card_active,
                  :digest_id,
-                 :active_subscriber_count,
                  :post_count,
                  :total_view_count
 

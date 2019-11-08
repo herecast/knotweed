@@ -61,6 +61,8 @@
 #
 
 class Caster < User
+  has_many :caster_followers, class_name: 'CasterFollow'
+
   searchkick callbacks: :async,
              batch_size: 1000,
              index_prefix: Figaro.env.searchkick_index_prefix,
@@ -69,14 +71,18 @@ class Caster < User
   def search_data
     {
       id: id,
-      name: name || organization&.name,
+      name: name,
       handle: handle,
-      description: description || organization&.description,
-      avatar_image_url: avatar&.url || organization&.profile_image_url
+      description: description,
+      avatar_image_url: avatar&.url
     }
   end
 
   def mc_followers_segment_name
     "#{id}-caster-segment"
+  end
+
+  def active_follower_count
+    caster_followers.active.count
   end
 end

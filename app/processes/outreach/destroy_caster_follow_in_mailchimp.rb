@@ -1,23 +1,22 @@
 # frozen_string_literal: true
 
 module Outreach
-  class DestroyOrganizationSubscriptionInMailchimp
+  class DestroyCasterFollowInMailchimp
     include MailchimpAPI
 
     def self.call(*args)
       new(*args).call
     end
 
-    def initialize(organization_subscription)
-      @organization_subscription = organization_subscription
-      @caster                    = organization_subscription.caster
-      @user                      = organization_subscription.user
+    def initialize(caster_follow)
+      @caster_follow = caster_follow
+      @caster        = caster_follow.caster
+      @user          = caster_follow.user
     end
 
     def call
       mailchimp_caster_segment_delete_member
-      @organization_subscription.update_attribute(:deleted_at, Time.current)
-      @caster.organization&.reindex(:active_subscriber_count_data)
+      @caster_follow.update_attribute(:deleted_at, Time.current)
       true
     end
 

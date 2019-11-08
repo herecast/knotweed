@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191106175813) do
+ActiveRecord::Schema.define(version: 20191107144523) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -55,6 +55,18 @@ ActiveRecord::Schema.define(version: 20191106175813) do
     t.integer  'promotion_ids', default: [], array: true
     t.index ['community_ids'], name: 'index_campaigns_on_community_ids', using: :btree
     t.index ['listserv_id'], name: 'index_campaigns_on_listserv_id', using: :btree
+  end
+
+  create_table 'caster_follows', force: :cascade do |t|
+    t.bigint   'user_id'
+    t.string   'mc_subscriber_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.datetime 'deleted_at'
+    t.integer  'caster_id'
+    t.index ['caster_id'], name: 'index_caster_follows_on_caster_id'
+    t.index %w[user_id caster_id], name: 'index_caster_follows_on_user_id_and_caster_id', unique: true
+    t.index ['user_id'], name: 'index_caster_follows_on_user_id'
   end
 
   create_table 'caster_hides', force: :cascade do |t|
@@ -404,20 +416,6 @@ ActiveRecord::Schema.define(version: 20191106175813) do
     t.datetime 'updated_at'
     t.index ['location_id'], name: 'index_organization_locations_on_location_id', using: :btree
     t.index ['organization_id'], name: 'index_organization_locations_on_organization_id', using: :btree
-  end
-
-  create_table 'organization_subscriptions', force: :cascade do |t|
-    t.bigint   'user_id'
-    t.bigint   'organization_id'
-    t.string   'mc_subscriber_id'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.integer  'caster_id'
-    t.index ['caster_id'], name: 'index_organization_subscriptions_on_caster_id'
-    t.index ['organization_id'], name: 'index_organization_subscriptions_on_organization_id'
-    t.index %w[user_id organization_id], name: 'index_organization_subscriptions_on_user_id_and_organization_id', unique: true
-    t.index ['user_id'], name: 'index_organization_subscriptions_on_user_id'
   end
 
   create_table 'organizations', id: :bigserial, force: :cascade do |t|

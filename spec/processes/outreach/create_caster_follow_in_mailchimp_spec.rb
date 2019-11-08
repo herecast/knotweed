@@ -2,14 +2,13 @@
 
 require 'rails_helper'
 
-RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearch: true do
+RSpec.describe Outreach::CreateCasterFollowInMailchimp, elasticsearch: true do
   describe '::call' do
     before do
       @mc_segment_id = 'mc-83j29'
       @caster = FactoryGirl.create :caster
-      @organization = FactoryGirl.create :organization, user_id: @caster.id
       @user = FactoryGirl.create :user
-      @org_subscription = FactoryGirl.build :organization_subscription,
+      @caster_follow = FactoryGirl.build :caster_follow,
                                             user_id: @user.id,
                                             caster_id: @caster.id
 
@@ -29,10 +28,10 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
     end
 
     subject do
-      Outreach::CreateOrganizationSubscriptionInMailchimp.call(@org_subscription)
+      Outreach::CreateCasterFollowInMailchimp.call(@caster_follow)
     end
 
-    it 'creates mailchimp_segment_id for Organization' do
+    it 'creates mailchimp_segment_id for Caster' do
       expect { subject }.to change {
         @caster.reload.mc_followers_segment_id
       }.to @mc_segment_id
@@ -57,11 +56,6 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
       subject
     end
 
-    it "calls for narrow reindex of Organization" do
-      expect_any_instance_of(Organization).to receive(:reindex)
-      subject
-    end
-
     context 'when Caster has mc_followers_segment_id' do
       before do
         @caster.update_attribute(:mc_followers_segment_id, @mc_segment_id)
@@ -73,15 +67,15 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
       end
     end
 
-    context 'when organization_subscription is persisted and deleted' do
+    context 'when caster_follow is persisted and deleted' do
       before do
-        @org_subscription.deleted_at = Time.current
-        @org_subscription.save
+        @caster_follow.deleted_at = Time.current
+        @caster_follow.save
       end
 
       it 'updates deleted_at to nil' do
         expect { subject }.to change {
-          @org_subscription.deleted_at
+          @caster_follow.deleted_at
         }.to nil
       end
     end

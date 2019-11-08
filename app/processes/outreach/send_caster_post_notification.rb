@@ -16,7 +16,7 @@ module Outreach
 
     def initialize(content)
       @content           = content
-      @caster            = content.created_by
+      @caster            = content.caster
       @title             = content.title
       @post_url          = "https://#{Figaro.env.default_consumer_host}/#{content.id}"
       @profile_image_url = @caster.avatar_url

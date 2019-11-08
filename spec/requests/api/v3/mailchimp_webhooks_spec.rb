@@ -26,15 +26,15 @@ RSpec.describe 'MailchimpWebook Requests', type: :request do
         allow(Figaro).to receive(:env).and_return(env)
         user = FactoryGirl.create :user,
                                   email: mailchimp_webhook_content['data']['email']
-        @org_subscription = FactoryGirl.create :organization_subscription,
+        @caster_follow = FactoryGirl.create :caster_follow,
           user: user,
           caster: FactoryGirl.create(:caster),
           deleted_at: nil
       end
 
-      it 'marks user organization_subscriptions as deleted' do
+      it 'marks user caster_follows as deleted' do
         expect { subject }.to change {
-          @org_subscription.reload.deleted_at
+          @caster_follow.reload.deleted_at
         }
         subject
       end

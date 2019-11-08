@@ -2,14 +2,13 @@
 
 require 'rails_helper'
 
-RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearch: true do
+RSpec.describe Outreach::CreateCasterFollowInMailchimp, elasticsearch: true do
   describe '::call' do
     before do
       @mc_segment_id = 'mc-ndjk21'
       @user = FactoryGirl.create :user
       @caster = FactoryGirl.create :caster, mc_followers_segment_id: @mc_segment_id
-      @organization = FactoryGirl.create :organization, user_id: @caster.id
-      @org_subscription = FactoryGirl.create :organization_subscription,
+      @caster_follow = FactoryGirl.create :caster_follow,
                                              user_id: @user.id,
                                              caster_id: @caster.id
 
@@ -23,7 +22,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
     end
 
     subject do
-      Outreach::DestroyOrganizationSubscriptionInMailchimp.call(@org_subscription)
+      Outreach::DestroyCasterFollowInMailchimp.call(@caster_follow)
     end
 
     it 'calls to Mailchimp to remove subscription' do
@@ -35,17 +34,10 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearc
       subject
     end
 
-    it 'marks organization_subscription as deleted' do
+    it 'marks caster_follow as deleted' do
       expect { subject }.to change {
-        @org_subscription.reload.deleted_at
+        @caster_follow.reload.deleted_at
       }
-    end
-
-    it "calls narrow reindex on Organization" do
-      expect_any_instance_of(Organization).to receive(
-        :reindex
-      ).with(:active_subscriber_count_data)
-      subject
     end
   end
 end

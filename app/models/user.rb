@@ -67,8 +67,7 @@ class User < ActiveRecord::Base
   has_many :contents, foreign_key: 'created_by_id'
   has_many :payments, foreign_key: 'paid_to_id'
 
-  has_many :caster_followers, class_name: 'OrganizationSubscription', foreign_key: 'caster_id'
-  has_many :caster_follows, class_name: 'OrganizationSubscription', foreign_key: 'user_id'
+  has_many :caster_follows
 
   has_many :caster_hides
   has_many :caster_hiders, class_name: 'CasterHide', foreign_key: 'caster_id'
@@ -226,6 +225,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def caster
+    Caster.find(id)
+  end
+
+  def active_follower_count
+    caster.active_follower_count
+  end
+
   def name_with_email
     "#{name} (#{email})"
   end
@@ -236,10 +243,6 @@ class User < ActiveRecord::Base
 
   def blocked_caster_ids
     caster_hides.active.pluck(:caster_id)
-  end
-
-  def active_follower_count
-    caster_followers.active.count
   end
 
   def counted_posts

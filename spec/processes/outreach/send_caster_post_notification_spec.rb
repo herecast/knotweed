@@ -7,7 +7,6 @@ RSpec.describe Outreach::SendCasterPostNotification do
     before do
       @mc_segment_id = 'mc-nj345k'
       @caster = FactoryGirl.create :caster, mc_followers_segment_id: @mc_segment_id
-      @organization = FactoryGirl.create :organization, user_id: @caster.id
       @content = FactoryGirl.create :content, :news, created_by: @caster
       @mc_campaign_id = 'mc-243nk'
       @campaigns = double(
@@ -35,7 +34,7 @@ RSpec.describe Outreach::SendCasterPostNotification do
 
     context 'when Caster has subscribers' do
       before do
-        FactoryGirl.create :organization_subscription,
+        FactoryGirl.create :caster_follow,
                            caster_id: @caster.id
       end
 

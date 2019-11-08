@@ -1,25 +1,24 @@
 # frozen_string_literal: true
 
 module Outreach
-  class CreateOrganizationSubscriptionInMailchimp
+  class CreateCasterFollowInMailchimp
     include MailchimpAPI
 
     def self.call(*args)
       new(*args).call
     end
 
-    def initialize(organization_subscription)
-      @organization_subscription = organization_subscription
-      @caster                    = organization_subscription.caster
-      @user                      = organization_subscription.user
+    def initialize(caster_follow)
+      @caster_follow = caster_follow
+      @caster        = caster_follow.caster
+      @user          = caster_follow.user
     end
 
     def call
       conditionally_create_mailchimp_caster_segment
       conditionally_add_user_to_mailchimp_master_list(@user)
       add_member_to_mailchimp_caster_segment
-      conditionally_undelete_caster_subscription
-      @caster.organization&.reindex(:active_subscriber_count_data)
+      conditionally_undelete_caster_follow
       true
     end
 
@@ -39,15 +38,15 @@ module Outreach
                                                             [{ email: @user.email }])
     end
 
-    def conditionally_undelete_caster_subscription
-      if caster_subscription_persisted_and_deleted?
-        @organization_subscription.deleted_at = nil
+    def conditionally_undelete_caster_follow
+      if caster_follow_persisted_and_deleted?
+        @caster_follow.deleted_at = nil
       end
     end
 
-    def caster_subscription_persisted_and_deleted?
-      @organization_subscription.persisted? && \
-        @organization_subscription.deleted_at.present?
+    def caster_follow_persisted_and_deleted?
+      @caster_follow.persisted? && \
+        @caster_follow.deleted_at.present?
     end
   end
 end

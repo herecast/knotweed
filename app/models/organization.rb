@@ -92,10 +92,6 @@ class Organization < ActiveRecord::Base
     { post_count: post_count }
   end
 
-  def active_subscriber_count_data
-    { active_subscriber_count: active_subscriber_count }
-  end
-
   def total_view_count_data
     { total_view_count: total_view_count }
   end
@@ -112,7 +108,6 @@ class Organization < ActiveRecord::Base
   has_many :children, class_name: 'Organization', foreign_key: 'parent_id'
 
   has_many :contents
-  has_many :organization_subscriptions
 
   has_many :organization_content_tags
   has_many :tagged_contents, through: :organization_content_tags
@@ -196,10 +191,6 @@ class Organization < ActiveRecord::Base
 
   def mc_segment_name
     "#{id}-organization-segment"
-  end
-
-  def active_subscriber_count
-    user&.active_follower_count || 0
   end
 
   # counts MarketPost, News, and Events -- not comments or ads

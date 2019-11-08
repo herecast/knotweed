@@ -16,7 +16,7 @@
 #
 #  index_caster_follows_on_caster_id              (caster_id)
 #  index_caster_follows_on_user_id                (user_id)
-#  index_caster_follows_on_user_id_and_caster_id  (user_id,caster_id) UNIQUE
+#  index_caster_follows_on_user_id_and_caster_id  (user_id,organization_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -24,11 +24,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 
-# Read about factories at https://github.com/thoughtbot/factory_girl
+require 'rails_helper'
 
-FactoryGirl.define do
-  factory :caster_follow do
-    user
-    caster
-  end
+RSpec.describe CasterFollow, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
 end
