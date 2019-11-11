@@ -63,7 +63,7 @@
 class User < ActiveRecord::Base
   has_many :subscriptions
   has_many :social_logins
-  has_many :user_bookmarks
+  has_many :likes
   has_many :contents, foreign_key: 'created_by_id'
   has_many :payments, foreign_key: 'paid_to_id'
 
@@ -262,13 +262,9 @@ class User < ActiveRecord::Base
     counted_posts.count
   end
 
-  def caster_bookmarks
-    user_bookmarks
-  end
-
   def total_like_count
     content_ids = contents.pluck(:id)
-    UserBookmark.where(content_id: content_ids).count
+    Like.where(content_id: content_ids).count
   end
 
   private

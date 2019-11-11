@@ -13,7 +13,7 @@ module Api
                  :user_image_url,
                  :skip_analytics,
                  :location_confirmed,
-                 :has_had_bookmarks,
+                 :has_had_likes,
                  :is_blogger,
                  :organization_subscriptions,
                  :caster_hides,

@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: user_bookmarks
+# Table name: likes
 #
 #  id                :integer          not null, primary key
 #  user_id           :integer
@@ -10,7 +10,6 @@
 #  event_instance_id :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  read              :boolean          default(FALSE)
 #  deleted_at        :datetime
 #
 # Indexes
@@ -25,6 +24,12 @@
 #  fk_rails_...  (user_id => users.id)
 #
 
+class Like < ActiveRecord::Base
+  acts_as_paranoid
 
-class CasterBookmark < UserBookmark
+  belongs_to :user
+  belongs_to :content
+
+  validates :user, presence: true
+  validates :content, presence: true
 end

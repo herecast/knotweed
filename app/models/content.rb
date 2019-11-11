@@ -199,7 +199,7 @@ class Content < ActiveRecord::Base
   has_many :comments
 
   has_many :promotions
-  has_many :user_bookmarks
+  has_many :likes
 
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: 'Content'
@@ -470,7 +470,7 @@ class Content < ActiveRecord::Base
   end
 
   def like_count
-    user_bookmarks.count
+    likes.count
   end
 
   private

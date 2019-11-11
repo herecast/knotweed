@@ -9,13 +9,13 @@ module Api
                  :listserv_name,
                  :skip_analytics,
                  :location_confirmed,
-                 :has_had_bookmarks,
+                 :has_had_likes,
                  :is_blogger,
                  :caster_follows,
                  :caster_hides,
                  :feed_card_size,
                  :user_hide_count,
-                 :bookmarks,
+                 :likes,
                  :phone,
                  :publisher_agreement_confirmed
 
@@ -51,11 +51,11 @@ module Api
         object.caster_hiders.count
       end
 
-      def bookmarks
-        object.user_bookmarks.map do |bookmark|
+      def likes
+        object.likes.map do |like|
           {
-            id: bookmark.id,
-            content_id: bookmark.content_id
+            id: like.id,
+            content_id: like.content_id
           }
         end
       end

@@ -655,17 +655,16 @@ ActiveRecord::Schema.define(version: 20191107144523) do
     t.index ['user_id'], name: 'index_subscriptions_on_user_id', using: :btree
   end
 
-  create_table 'user_bookmarks', force: :cascade do |t|
+  create_table 'likes', force: :cascade do |t|
     t.integer  'user_id'
     t.integer  'content_id'
     t.integer  'event_instance_id'
     t.datetime 'created_at',                        null: false
     t.datetime 'updated_at',                        null: false
-    t.boolean  'read', default: false
     t.datetime 'deleted_at'
-    t.index ['content_id'], name: 'index_user_bookmarks_on_content_id', using: :btree
-    t.index ['deleted_at'], name: 'index_user_bookmarks_on_deleted_at', using: :btree
-    t.index ['user_id'], name: 'index_user_bookmarks_on_user_id', using: :btree
+    t.index ['content_id'], name: 'index_likes_on_content_id', using: :btree
+    t.index ['deleted_at'], name: 'index_likes_on_deleted_at', using: :btree
+    t.index ['user_id'], name: 'index_likes_on_user_id', using: :btree
   end
 
   create_table 'users', id: :bigserial, force: :cascade do |t|
@@ -701,7 +700,7 @@ ActiveRecord::Schema.define(version: 20191107144523) do
     t.string   'nickname'
     t.boolean  'epayment',                           default: false
     t.boolean  'w9',                                 default: false
-    t.boolean  'has_had_bookmarks',                  default: false
+    t.boolean  'has_had_likes',                  default: false
     t.string   'mc_segment_id'
     t.string   'first_name'
     t.string   'last_name'
@@ -804,5 +803,5 @@ ActiveRecord::Schema.define(version: 20191107144523) do
   add_foreign_key 'social_logins', 'users'
   add_foreign_key 'subscriptions', 'listservs'
   add_foreign_key 'subscriptions', 'users'
-  add_foreign_key 'user_bookmarks', 'users'
+  add_foreign_key 'likes', 'users'
 end

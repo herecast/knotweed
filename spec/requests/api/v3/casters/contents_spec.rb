@@ -41,20 +41,20 @@ describe 'Caster Content endpoints', type: :request do
         expect(response_json[:feed_items].count).to eq @length
       end
 
-      context "when ?bookmarked=true" do
+      context "when ?liked=true" do
         before do
-          @bookmarked_content = FactoryGirl.create :content
-          FactoryGirl.create :user_bookmark,
-            content: @bookmarked_content,
+          @liked_content = FactoryGirl.create :content
+          FactoryGirl.create :like,
+            content: @liked_content,
             user_id: caster.id
         end
 
-        subject { get "/api/v3/casters/#{caster.id}/contents?bookmarked=true" }
+        subject { get "/api/v3/casters/#{caster.id}/contents?liked=true" }
       
-        it "returns Caster's bookmarked content" do
+        it "returns Caster's liked content" do
           subject
           response_ids = response_json[:feed_items].map { |i| i[:content][:id] }
-          expect(response_ids).to match_array [@bookmarked_content.id]
+          expect(response_ids).to match_array [@liked_content.id]
         end
       end
 

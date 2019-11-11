@@ -28,7 +28,7 @@ module Api
             :location_confirmed,
             :password,
             :password_confirmation,
-            :has_had_bookmarks,
+            :has_had_likes,
             :feed_card_size,
             :background_image,
             :description,

@@ -46,8 +46,8 @@ class ContentSearch
 
   def caster_query
     standard_query.tap do |attrs|
-      if @params[:bookmarked] == 'true'
-        attrs[:where][:id] = { in: CasterBookmark.where(user_id: @params[:id]).pluck(:content_id) }
+      if @params[:liked] == 'true'
+        attrs[:where][:id] = { in: Like.where(user_id: @params[:id]).pluck(:content_id) }
       else
         attrs[:where][:created_by_id] = @params[:id]
       end

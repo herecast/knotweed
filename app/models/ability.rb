@@ -18,7 +18,7 @@ class Ability
       can :manage, PromotionBanner, promotion: { created_by: user }
       can :manage, Content, created_by: user
       can :manage, Comment, created_by: user
-      can :manage, UserBookmark, user: user
+      can :manage, Like, user: user
       can :manage, user
       can :create, Organization
       can :manage, Hashie::Mash, _type: 'content', created_by: { id: user.id }

@@ -102,7 +102,7 @@ Rails.application.routes.draw do
       get '/casters',         to: 'casters#show'
 
       namespace :casters do
-        resources :bookmarks, except: %i[show new edit], path: '/:caster_id/bookmarks'
+        resources :likes, except: %i[show new edit], path: '/:caster_id/likes'
         resources :sitemap_ids, only: :index
         post   '/:caster_id/follows', to: 'follows#create'
         delete '/follows/:id',        to: 'follows#destroy'
