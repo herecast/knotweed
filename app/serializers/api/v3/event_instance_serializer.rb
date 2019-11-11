@@ -52,7 +52,7 @@ module Api
       has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
 
       def comments
-        object.event.content.abridged_comments
+        object.event.content.available_comments
       end
 
       def promote_radius

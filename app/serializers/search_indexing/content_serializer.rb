@@ -23,12 +23,12 @@ module SearchIndexing
     has_many :comments, serializer: Api::V3::CommentSerializer
 
     def comments
-      object.abridged_comments
+      object.available_comments
     end
 
     # user IDs who have commented on this content
     def commented_on_by_ids
-      object.abridged_comments.map(&:created_by_id)
+      object.available_comments.map(&:created_by_id)
     end
 
     def content_category_name

@@ -460,10 +460,9 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def abridged_comments
+  def available_comments
     comments.where('pubdate IS NOT NULL AND deleted_at IS NULL')
             .order(pubdate: :desc)
-            .take(6)
   end
 
   def should_notify_subscribers?

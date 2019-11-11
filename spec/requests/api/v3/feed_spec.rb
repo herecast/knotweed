@@ -149,9 +149,9 @@ describe 'Feed endpoints', type: :request do
             content: content
         end
 
-        it 'embeds the last 6 comments' do
+        it 'embeds all comments' do
           do_request
-          expected_results = comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
+          expected_results = comments.sort_by(&:pubdate).reverse.map do |comment|
             {
               id: comment.id,
               content_id: comment.id,
@@ -203,7 +203,6 @@ describe 'Feed endpoints', type: :request do
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
     end
-    let!(:comment) { FactoryGirl.create :comment, content: talk }
 
     context 'news content' do
       let(:do_request) do
