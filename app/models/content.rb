@@ -438,7 +438,7 @@ class Content < ActiveRecord::Base
   end
 
   def embedded_ad?
-    !!(organization.present? && organization.embedded_ad)
+    true
   end
 
   def built_view_count

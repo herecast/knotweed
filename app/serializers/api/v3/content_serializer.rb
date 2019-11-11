@@ -87,7 +87,7 @@ module Api
 
       def caster_name
         if caster_object
-          caster_object.name || caster_object.organization&.name
+          caster_object.name
         end
       end
 
