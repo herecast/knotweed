@@ -108,9 +108,9 @@ describe Api::V3::ContentsController, type: :controller do
       end
 
       context 'when contents is not a draft' do
-        it 'returns bad_request status' do
+        it 'returns ok status' do
           subject
-          expect(response).to have_http_status :bad_request
+          expect(response).to have_http_status :ok
         end
       end
 

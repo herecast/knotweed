@@ -8,7 +8,6 @@ module SearchIndexing
                :created_by_id,
                :created_by_image_url,
                :created_by_name,
-               :deleted,
                :in_accepted_category,
                :latest_activity,
                :origin,
@@ -33,10 +32,6 @@ module SearchIndexing
 
     def content_category_name
       object.content_category
-    end
-
-    def deleted
-      object.deleted_at.present?
     end
 
     def in_accepted_category

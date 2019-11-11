@@ -21,6 +21,7 @@ module Api
                  :cost,
                  :cost_type,
                  :created_at,
+                 :deleted,
                  :embedded_ad,
                  :ends_at,
                  :event_instance_id,
@@ -57,7 +58,9 @@ module Api
                  :view_count
 
       def caster
-        if caster_object
+        if object.removed_or_deleted?
+          nil
+        elsif caster_object
           {
             id: caster_object.id,
             name: caster_object.name,
@@ -89,6 +92,10 @@ module Api
         if caster_object
           caster_object.name
         end
+      end
+
+      def deleted
+        object.deleted_at.present?
       end
 
       def event_instance_id
@@ -319,7 +326,9 @@ module Api
         # object.location returns false when there is no location
         # after upgrading searchkick, so safe navigation operator
         # now returns an error -- hence need to change approach here
-        if object.location
+        if object.removed_or_deleted?
+          nil
+        elsif object.location
           {
             id: object.location.id,
             city: object.location.city,

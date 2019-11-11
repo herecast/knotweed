@@ -29,6 +29,7 @@ class CreateAlternateContent
       image.define_singleton_method(:image_url) { alt_image_url }
       dupe = Content.new(attrs)
       dupe.define_singleton_method(:images) { [image] }
+      dupe.define_singleton_method(:comments) { content.comments }
       dupe
     end
   end
@@ -41,7 +42,9 @@ class CreateAlternateContent
       organization_id: @original_content.alternate_organization_id.presence || ALTERNATE_ORGANIZATION_ID,
       content_category: @original_content.content_category,
       id: @original_content.id,
-      pubdate: @original_content.pubdate
+      pubdate: @original_content.pubdate,
+      removed: @original_content.removed,
+      deleted_at: @original_content.deleted_at
     }
   end
 end

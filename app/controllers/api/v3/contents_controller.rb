@@ -52,9 +52,9 @@ module Api
 
       def show
         @content = Content.search_by(id: params[:id], user: current_user)
-        if @content.removed == true
+        if @content.removed == true || user_deleted?
           @content = CreateAlternateContent.call(Content.find(params[:id]))
-          render json: @content, serializer: ContentSerializer, status: :ok
+          render json: @content, serializer: SearchIndexing::ContentSerializer, status: :ok
         elsif has_pubdate_in_past_or_can_edit?
           render json: { content: @content }, status: :ok
         else
@@ -93,9 +93,8 @@ module Api
         @content = Content.find params[:id]
         authorize! :destroy, @content
 
-        if @content.pubdate.nil?
-          @content.update_attribute(:deleted_at, Time.current)
-          render json: {}, status: :no_content
+        if @content.update_attribute(:deleted_at, Time.current)
+          render json: {}, status: :ok
         else
           render json: {}, status: :bad_request
         end
@@ -103,8 +102,14 @@ module Api
 
       protected
 
+      def user_deleted?
+        @content.deleted && \
+          @content.pubdate.present? && \
+          DateTime.parse(@content.pubdate) < Time.current
+      end
+
       def has_pubdate_in_past_or_can_edit?
-        return false if @content.deleted_at.present?
+        return false if @content.deleted
         return true if @content.can_edit
 
         @content.pubdate.present? && @content.pubdate < Time.current

@@ -160,7 +160,7 @@ class Content < ActiveRecord::Base
   end
 
   def should_index?
-    deleted_at.blank? && raw_content.present?
+    raw_content.present?
   end
 
   after_commit :reindex_associations_async
@@ -471,6 +471,10 @@ class Content < ActiveRecord::Base
 
   def like_count
     likes.count
+  end
+
+  def removed_or_deleted?
+    removed || deleted_at.present?
   end
 
   private

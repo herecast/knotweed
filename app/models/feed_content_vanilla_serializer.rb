@@ -30,7 +30,10 @@ class FeedContentVanillaSerializer
   end
 
   def content(raw_content)
-    if raw_content.present?
+    if raw_content.present? && removed_or_deleted?(raw_content)
+      content = CreateAlternateContent.call(Content.find(raw_content.id))
+      SearchIndexing::ContentSerializer.new(content).as_json['content']
+    elsif raw_content.present?
       Api::V3::HashieMashes::ContentSerializer.new(raw_content).as_json['content']
     end
   end
@@ -65,5 +68,9 @@ class FeedContentVanillaSerializer
     raw_contents.map do |raw_content|
       Api::V3::HashieMashes::ContentSerializer.new(raw_content).as_json['content']
     end
+  end
+
+  def removed_or_deleted?(raw_content)
+    raw_content.removed || raw_content.deleted
   end
 end

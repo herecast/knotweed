@@ -40,6 +40,8 @@ class ContentSearch
   # returns content that has been commented on by the current user
   def comment_query
     standard_opts.tap do |attrs|
+      attrs[:where].delete(:deleted)
+      attrs[:where].delete(:removed)
       attrs[:where][:commented_on_by_ids] = { in: @params[:id] }
     end
   end
@@ -82,9 +84,8 @@ class ContentSearch
         content_type: 'event',
         biz_feed_public: [true, nil],
         starts_at: starts_at_range,
-        removed: {
-          not: true
-        }
+        removed: false,
+        deleted: false
       },
       order: {
         starts_at: :asc
@@ -112,9 +113,8 @@ class ContentSearch
       per_page: per_page,
       where: {
         pubdate: 5.years.ago..Time.zone.now,
-        removed: {
-          not: true
-        }
+        removed: false,
+        deleted: false
       }
     }.tap do |attrs|
       if @current_user

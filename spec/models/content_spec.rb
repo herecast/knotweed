@@ -109,14 +109,6 @@ describe Content, type: :model do
   end
 
   describe '#should_index?' do
-    context 'when content is soft deleted' do
-      let(:content) { FactoryGirl.create :content, deleted_at: Date.yesterday }
-
-      it 'returns false' do
-        expect(content.should_index?).to be false
-      end
-    end
-
     context 'when pubdate is within past five years and before today' do
       let(:content) { FactoryGirl.create :content, pubdate: Date.yesterday }
 
