@@ -82,15 +82,6 @@ module Api
           object.images
         end
 
-        def next_or_first_instance
-          instances_by_start_date = (object.event_instances || []).sort_by do |inst|
-            DateTime.parse(inst.starts_at)
-          end
-          instances_by_start_date.find do |instance|
-            DateTime.parse(instance.starts_at) >= Time.zone.now
-          end || instances_by_start_date.first
-        end
-
         def starts_at
           next_or_first_instance.try(:starts_at) if is_event?
         end
@@ -119,14 +110,19 @@ module Api
           object.created_by_name
         end
 
-        def view_count
-          Content.find_by(id: object.id)&.built_view_count
-        end
-
         private
 
         def is_event?
           object.content_type == 'event'
+        end
+
+        def next_or_first_instance
+          instances_by_start_date = (object.event_instances || []).sort_by do |inst|
+            DateTime.parse(inst.starts_at)
+          end
+          instances_by_start_date.find do |instance|
+            DateTime.parse(instance.starts_at) >= Time.zone.now
+          end || instances_by_start_date.first
         end
       end
     end
