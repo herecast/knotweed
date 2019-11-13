@@ -74,7 +74,8 @@ class Caster < User
       name: name,
       handle: handle,
       description: description,
-      avatar_image_url: avatar&.url
+      avatar_image_url: avatar&.url,
+      archived: archived
     }
   end
 

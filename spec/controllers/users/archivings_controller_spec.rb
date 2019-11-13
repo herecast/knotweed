@@ -22,6 +22,14 @@ describe Users::ArchivingsController, type: :controller do
       expect { subject }.to change { user.reload.archived? }.to true
     end
 
+    context 'without new_content_owner', freeze_time: true do
+      let!(:contents) { FactoryGirl.create_list :content, 3, created_by: user }
+
+      it 'should update the user content with deleted_at' do
+        expect { subject }.to change { Content.last.deleted_at }.from(nil).to(Time.current)
+      end
+    end
+
     context 'with new_content_owner passed' do
       let(:new_content_owner) { FactoryGirl.create :user }
       let!(:contents) { FactoryGirl.create_list :content, 3 }

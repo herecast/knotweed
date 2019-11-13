@@ -5,18 +5,31 @@ require 'rails_helper'
 describe 'Casters endpoints', type: :request do
 
   describe 'GET /api/v3/casters/follows', elasticsearch: true do
+    let(:query) { 'Han' }
     before do
-      @query = 'Han'
-      @caster = FactoryGirl.create :caster, handle: @query
+      @caster = FactoryGirl.create :caster, handle: query
       Caster.reindex
     end
 
-    subject { get "/api/v3/casters/follows?query=#{@query}" }
+    subject { get "/api/v3/casters/follows?query=#{query}" }
 
     it 'returns caster' do
       subject
       returned_caster_ids = JSON.parse(response.body)['casters'].map { |caster| caster['id'] }
       expect(returned_caster_ids).to match_array [@caster.id]
+    end
+
+    describe 'with an archived caster' do
+      before do
+        @caster.update archived: true
+        Caster.reindex
+      end
+
+      it 'should not return caster' do
+        subject
+        returned_caster_ids = JSON.parse(response.body)['casters'].map { |caster| caster['id'] }
+        expect(returned_caster_ids).to_not include(@caster.id)
+      end
     end
   end
 

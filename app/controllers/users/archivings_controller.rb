@@ -19,10 +19,15 @@ class Users::ArchivingsController < ApplicationController
 
     @user.update!(archived: true)
     flash[:notice] = +"User #{@user.email} has been archived."
+    contents = Content.where(created_by: @user)
     if new_owner.present?
-      Content.where(created_by: @user).update_all(created_by_id: new_owner.id)
+      contents.update_all(created_by_id: new_owner.id)
       flash[:notice] << " All content belonging to that account has been reassigned to #{new_owner.email}"
+    else
+      contents.update_all(deleted_at: Time.current)
+      flash[:notice] << " All content belonging to that account was deleted"
     end
+    contents.each{ |c| c.reindex(mode: :async) } # update_all doesn't trigger reindex
     redirect_to users_path
   end
 end
