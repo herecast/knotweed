@@ -15,8 +15,8 @@ module SlackService
   }.freeze
 
   WEBHOOK_URLS = {
-    socialmedia: 'https://hooks.slack.com/services/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',
-    dev_private: 'https://hooks.slack.com/services/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'
+    socialmedia: nil,
+    dev_private: nil
   }.freeze
 
   def send_published_content_notification(content)
